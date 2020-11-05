@@ -1,10 +1,9 @@
-package test3;
+package test;
 
 public class Main {
 
 	public static void main(String[] args) {
-
 		new App().run();
-
+		
 	}
 }

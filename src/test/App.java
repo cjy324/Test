@@ -1,36 +1,36 @@
-package test3;
+package test;
 
 import java.util.Scanner;
 
-import test3.container.Container;
-import test3.controller.ArticleController;
-import test3.controller.Controller;
-import test3.controller.MemberController;
+import test.container.Container;
+import test.controller.ArticleController;
+import test.controller.Controller;
+import test.controller.MemberController;
 
 public class App {
 
-	private MemberController memberController;
-	private ArticleController articleController;
+	Scanner sc;
+	MemberController memberController;
+	ArticleController articleController;
 
 	public App() {
+		sc = Container.scanner;
 		memberController = new MemberController();
 		articleController = new ArticleController();
-
 	}
 
 	public void run() {
-		Scanner sc = Container.scanner;
 
 		while (true) {
-			System.out.printf("명령어) ");
+			System.out.printf("명령어: ");
 			String cmd = sc.nextLine();
 
-			if (cmd.equals("system exit")) {
+			if (cmd.equals("exit")) {
+				System.out.println("종료");
 				break;
 			}
-
 			Controller controller = getControllerByCmd(cmd);
-			controller.doCommand(cmd);
+			controller.doCmd(cmd);
 		}
 		sc.close();
 	}
@@ -43,4 +43,5 @@ public class App {
 		}
 		return null;
 	}
+
 }
