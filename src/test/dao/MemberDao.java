@@ -13,7 +13,6 @@ public class MemberDao {
 	public MemberDao() {
 		members = new ArrayList<>();
 		lastMemberNum = 0;
-
 		makeTestData();
 	}
 
@@ -34,21 +33,29 @@ public class MemberDao {
 		lastMemberNum = member.mNum;
 
 		return member.mNum;
-
 	}
 
-	public Member getMemberByEqualsId(String loginId) {
+	public Member getMemberById(String inputdeId) {
 		for (Member member : members) {
-			if (member.mId.equals(loginId)) {
+			if (member.mId.equals(inputdeId)) {
 				return member;
 			}
 		}
 		return null;
 	}
 
-	public Member getMemberByEqualsNum(int memberNum) {
+	public Member checkEqualsMemberId(String mId) {
 		for (Member member : members) {
-			if (member.mNum == memberNum) {
+			if (member.mId.equals(mId)) {
+				return member;
+			}
+		}
+		return null;
+	}
+
+	public Member getMemberByNum(int loginedMemberNum) {
+		for (Member member : members) {
+			if (member.mNum == loginedMemberNum) {
 				return member;
 			}
 		}

@@ -1,6 +1,6 @@
 package test.session;
 
-public class Sesseion {
+public class Session {
 
 	public int loginedMemberNum;
 
@@ -8,6 +8,4 @@ public class Sesseion {
 		return loginedMemberNum != 0;
 	}
 
-	
-	
 }

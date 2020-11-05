@@ -16,20 +16,20 @@ public class MemberService {
 		return memberDao.join(mId, mPw, mName);
 	}
 
-	public Member getMemberById(String loginId) {
-		return memberDao.getMemberByEqualsId(loginId);
+	public Member getMemberById(String inputdeId) {
+		return memberDao.getMemberById(inputdeId);
 	}
 
 	public boolean checkUsableMemberId(String mId) {
-		Member member = memberDao.getMemberByEqualsId(mId);
+		Member member = memberDao.checkEqualsMemberId(mId);
 		if (member == null) {
-			return true;
+			return false;
 		}
-		return false;
+		return true;
 	}
 
-	public Member getMemberByMemberNum(int MemberNum) {
-		return memberDao.getMemberByEqualsNum(MemberNum);
+	public Member getMemberByMemberNum(int loginedMemberNum) {
+		return memberDao.getMemberByNum(loginedMemberNum);
 	}
 
 }

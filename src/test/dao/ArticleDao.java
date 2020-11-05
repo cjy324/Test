@@ -24,10 +24,10 @@ public class ArticleDao {
 		for (int i = 6; i < 11; i++) {
 			add("title" + i, "body" + i, 2);
 		}
-
 	}
 
 	public int add(String title, String body, int writerNum) {
+
 		Article article = new Article();
 
 		article.aNum = lastArticleNum + 1;
@@ -44,9 +44,18 @@ public class ArticleDao {
 		return articles;
 	}
 
-	public Article getArticleByNum(int aNum) {
-		for (Article article : articles) {
-			if (article.aNum == aNum) {
+	public Article getArticleByNum(int inputedNum) {
+		for(Article article : articles) {
+			if(article.aNum == inputedNum) {
+				return article;
+			}
+		}
+		return null;
+	}
+
+	public Article getArticleByKeyword(String inputedKeyword) {
+		for(Article article : articles) {
+			if(article.body.contains(inputedKeyword)) {
 				return article;
 			}
 		}

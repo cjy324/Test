@@ -27,15 +27,16 @@ public class ArticleService {
 		return articleDao.getArticleByNum(inputedNum);
 	}
 
-	public List<Article> getArticlesByKeyword(String inputedKeyword) {
-		List<Article> searchedArticles = new ArrayList<>();
-		
-		for (Article article : articleDao.articles()) {
-			if (article.body.contains(inputedKeyword)) {
-				searchedArticles.add(article);
-			}
+	public List<Article> getSearchedArticlesByKeyword(String inputedKeyword) {
+
+		List<Article> searchedArticle = new ArrayList<>();
+
+		for (Article article : getArticles()) {
+			article = articleDao.getArticleByKeyword(inputedKeyword);
+			searchedArticle.add(article);
 		}
-		return searchedArticles;
+
+		return searchedArticle;
 	}
 
 }

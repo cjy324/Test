@@ -20,9 +20,8 @@ public class App {
 	}
 
 	public void run() {
-
 		while (true) {
-			System.out.printf("명령어: ");
+			System.out.printf("명령어 입력) ");
 			String cmd = sc.nextLine();
 
 			if (cmd.equals("exit")) {
@@ -31,7 +30,9 @@ public class App {
 			}
 			Controller controller = getControllerByCmd(cmd);
 			controller.doCmd(cmd);
+
 		}
+
 		sc.close();
 	}
 
