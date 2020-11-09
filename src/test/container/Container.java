@@ -2,6 +2,8 @@ package test.container;
 
 import java.util.Scanner;
 
+import test.controller.ArticleController;
+import test.controller.MemberController;
 import test.dao.ArticleDao;
 import test.dao.MemberDao;
 import test.service.ArticleService;
@@ -16,6 +18,8 @@ public class Container {
 	public static MemberDao memberDao;
 	public static ArticleService articleService;
 	public static MemberService memberService;
+	public static ArticleController articleController;
+	public static MemberController memberController;
 	
 	static {
 		scanner = new Scanner(System.in);
@@ -26,6 +30,9 @@ public class Container {
 		
 		articleService = new ArticleService();
 		memberService = new MemberService();
+		
+		articleController = new ArticleController();
+		memberController = new MemberController();
 	}
 
 }

@@ -4,32 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import test.dto.Article;
+import test.dto.Board;
 
 public class ArticleDao {
 
 	private List<Article> articles;
 	private int lastArticleNum;
+	private int lastArticleBoardNum;
+	private List<Board> boards;
+
 
 	public ArticleDao() {
 		articles = new ArrayList<>();
+		boards = new ArrayList<>();
 		lastArticleNum = 0;
+		lastArticleBoardNum = 0;
 
-		makeTestData();
 	}
 
-	private void makeTestData() {
-		for (int i = 1; i < 6; i++) {
-			add("title" + i, "body" + i, 1);
-		}
-		for (int i = 6; i < 11; i++) {
-			add("title" + i, "body" + i, 2);
-		}
-	}
-
-	public int add(String title, String body, int writerNum) {
+	public int add(int boardNum, String title, String body, int writerNum) {
 
 		Article article = new Article();
 
+		article.boardNum = boardNum;
 		article.aNum = lastArticleNum + 1;
 		article.title = title;
 		article.body = body;
@@ -53,13 +50,31 @@ public class ArticleDao {
 		return null;
 	}
 
-	public Article getArticleByKeyword(String inputedKeyword) {
-		for(Article article : articles) {
-			if(article.body.contains(inputedKeyword)) {
-				return article;
+	public int makeBoard(String bTitle) {
+		Board board = new Board();
+		
+		board.bNum = lastArticleBoardNum + 1;
+		board.bTitle = bTitle;
+		boards.add(board);
+		lastArticleBoardNum = board.bNum;
+		
+		return board.bNum;
+		
+	}
+
+	public Board getBoardByNum(int inputedNum) {
+		for(Board board : boards) {
+			if(board.bNum == inputedNum) {
+				return board;
 			}
 		}
 		return null;
+	}
+
+
+
+	public List<Board> getBoards() {
+		return boards;
 	}
 
 }
