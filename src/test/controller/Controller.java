@@ -2,6 +2,5 @@ package test.controller;
 
 public abstract class Controller {
 
-	public abstract void doCmd(String cmd); 
-
+	public abstract void doCmd(String cmd);
 }

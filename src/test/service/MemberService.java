@@ -10,26 +10,27 @@ public class MemberService {
 
 	public MemberService() {
 		memberDao = Container.memberDao;
+
 	}
 
 	public int join(String mId, String mPw, String mName) {
 		return memberDao.join(mId, mPw, mName);
 	}
 
-	public Member getMemberById(String inputdeId) {
-		return memberDao.getMemberById(inputdeId);
+	public Member getMemberByMId(String inputedId) {
+		return memberDao.getMemberByMId(inputedId);
 	}
 
-	public boolean checkUsableMemberId(String mId) {
-		Member member = memberDao.checkEqualsMemberId(mId);
+	public boolean checkUsableIdByMId(String mId) {
+		Member member = memberDao.getMemberByMId(mId);
 		if (member == null) {
-			return false;
+			return true;
 		}
-		return true;
+		return false;
 	}
 
-	public Member getMemberByMemberNum(int loginedMemberNum) {
-		return memberDao.getMemberByNum(loginedMemberNum);
+	public Member getMemberByMNum(int num) {
+		return memberDao.getMemberByMNum(num);
 	}
 
 }

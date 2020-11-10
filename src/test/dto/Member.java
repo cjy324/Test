@@ -6,5 +6,4 @@ public class Member {
 	public String mId;
 	public String mPw;
 	public String mName;
-	
 }
