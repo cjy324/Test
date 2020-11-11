@@ -10,8 +10,6 @@ public class Main {
 		
 		String n = sc.next();
 
-
-
 		System.out.printf("%s",n);
 		
 		sc.close();
