@@ -9,7 +9,7 @@ public class Main {
 		Scanner sc = new Scanner(System.in);
 		int date = sc.nextInt();
 		
-		System.out.printf("%04d.%02d.%02d",date);
+		System.out.printf("%04d",date);
 		
 		sc.close();
 	}
