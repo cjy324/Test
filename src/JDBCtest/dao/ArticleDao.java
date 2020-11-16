@@ -8,21 +8,23 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import JDBCtest.dto.Article;
 import JDBCtest.dto.Board;
 import JDBCtest.dto.Member;
+import JDBCtest.mysqlutil.MysqlUtil;
+import JDBCtest.mysqlutil.SecSql;
 
 public class ArticleDao {
-	
+
 	String driver;
 	Connection conn;
 	String url;
 	String userName;
 	String userPw;
 	String sql;
-	
-	
+
 	public ArticleDao() {
 
 		driver = "com.mysql.cj.jdbc.Driver";
@@ -30,58 +32,55 @@ public class ArticleDao {
 		userName = "sbsst";
 		userPw = "sbs123414";
 
-		
 	}
-	
+
 	// 게시물 생성
 	public int add(int boardId, String title, String body, int memberId) {
 		int id = 0;
 
 		try {
-		try {
-			Class.forName(driver);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			try {
+				Class.forName(driver);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-		try {
-			conn = DriverManager.getConnection(url, userName, userPw);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			try {
+				conn = DriverManager.getConnection(url, userName, userPw);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-		sql = "INSERT INTO article ";
-		sql += "SET ";
-		sql += "regDate = NOW(), ";
-		sql += "updateDate = NOW(), ";
-		sql += "title = ?, ";
-		sql += "body = ?, ";
-		sql += "memberId = ?,";
-		sql += "boardId = ?";
-		
-		PreparedStatement pstmt;
-		try {
-			pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
-			pstmt.setString(1, title);
-			pstmt.setString(2, body);
-			pstmt.setInt(3, memberId);
-			pstmt.setInt(4, boardId);
-			
-			pstmt.executeUpdate();
-			
-			ResultSet addedArticleId = pstmt.getGeneratedKeys();
-			addedArticleId.next();
-			id = addedArticleId.getInt(1);
-			
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		}
-		finally {
+			sql = "INSERT INTO article ";
+			sql += "SET ";
+			sql += "regDate = NOW(), ";
+			sql += "updateDate = NOW(), ";
+			sql += "title = ?, ";
+			sql += "body = ?, ";
+			sql += "memberId = ?,";
+			sql += "boardId = ?";
+
+			PreparedStatement pstmt;
+			try {
+				pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+				pstmt.setString(1, title);
+				pstmt.setString(2, body);
+				pstmt.setInt(3, memberId);
+				pstmt.setInt(4, boardId);
+
+				pstmt.executeUpdate();
+
+				ResultSet addedArticleId = pstmt.getGeneratedKeys();
+				addedArticleId.next();
+				id = addedArticleId.getInt(1);
+
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} finally {
 			try {
 				if (conn != null) {
 					conn.close();
@@ -100,123 +99,33 @@ public class ArticleDao {
 	// 게시물 리스팅
 	public List<Article> getArticles() {
 		List<Article> articles = new ArrayList<>();
-		try {
-			try {
-				Class.forName(driver);
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 
-			try {
-				conn = DriverManager.getConnection(url, userName, userPw);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		MysqlUtil.setDBInfo("localhost", "sbsst", "sbs123414", "textBoard");
 
-			sql = "SELECT * FROM article";
-
-			
-			PreparedStatement pstmt;
-			try {
-				pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
-
-				ResultSet rs = pstmt.executeQuery();
-				
-				while(rs.next()) {
-					int id = rs.getInt("id");
-					String regDate = rs.getString("regDate");
-					String updateDate = rs.getString("updateDate");
-					String title = rs.getString("title");
-					String body = rs.getString("body");
-					int boardId = rs.getInt("boardId");
-					int memberId = rs.getInt("memberId");
-					
-					Article article = new Article(id,regDate,updateDate,title,body,boardId,memberId);
-					
-					articles.add(article);
-
-				}
-				
-				
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			}
-			finally {
-				try {
-					if (conn != null) {
-						conn.close();
-
-					}
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			}
+		MysqlUtil.setDevMode(true);
 		
+		SecSql sql = new SecSql();
 		
+		sql.append("SELECT * FROM article");
+
+		System.out.println(sql);
+
+		MysqlUtil.closeConnection();
+
 		return articles;
 	}
 
 	// 게시물 수정
 	public void modifyArticle(int inputedId, String title, String body) {
-		try {
-			try {
-				Class.forName(driver);
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 
-			try {
-				conn = DriverManager.getConnection(url, userName, userPw);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		MysqlUtil.setDBInfo("localhost", "sbsst", "sbs123414", "textBoard");
 
-			sql = "UPDATE article ";
-			sql += "SET ";
-			sql += "updateDate = NOW(), ";
-			sql += "title = ?, ";
-			sql += "body = ? ";
-			sql += "WHERE id = ? ";
+		MysqlUtil.setDevMode(true);
 
-			
-			PreparedStatement pstmt;
-			
-			try {
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setString(1, title);
-				pstmt.setString(2, body);
-				pstmt.setInt(3, inputedId);
-				
-				
-				pstmt.executeUpdate();
-				
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		new SecSql().append("UPDATE article SET updateDate = NOW(),").append("title = ?", title).append("body = ?", body).append("WHERE id = ?", inputedId);
 
-			}
-			finally {
-				try {
-					if (conn != null) {
-						conn.close();
-
-					}
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			}
+		MysqlUtil.closeConnection();
+		
 	}
 
 	// 게시물 삭제
@@ -239,76 +148,71 @@ public class ArticleDao {
 			sql = "DELETE FROM article ";
 			sql += "WHERE id = ? ";
 
-			
 			PreparedStatement pstmt;
-			
+
 			try {
 				pstmt = conn.prepareStatement(sql);
 				pstmt.setInt(1, inputedId);
-				
-				
+
 				pstmt.executeUpdate();
-				
+
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-			}
-			finally {
-				try {
-					if (conn != null) {
-						conn.close();
+		} finally {
+			try {
+				if (conn != null) {
+					conn.close();
 
-					}
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
-
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+
+		}
 	}
 
 	public int boardAdd(String boardName) {
 		int boardId = 0;
 
 		try {
-		try {
-			Class.forName(driver);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			try {
+				Class.forName(driver);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-		try {
-			conn = DriverManager.getConnection(url, userName, userPw);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			try {
+				conn = DriverManager.getConnection(url, userName, userPw);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-		sql = "INSERT INTO board ";
-		sql += "SET ";
-		sql += "boardName = ?";
-		
-		PreparedStatement pstmt;
-		try {
-			pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
-			pstmt.setString(1, boardName);
+			sql = "INSERT INTO board ";
+			sql += "SET ";
+			sql += "boardName = ?";
 
-			pstmt.executeUpdate();
-			
-			ResultSet addedBoardId = pstmt.getGeneratedKeys();
-			addedBoardId.next();
-			boardId = addedBoardId.getInt(1);
-			
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		}
-		finally {
+			PreparedStatement pstmt;
+			try {
+				pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+				pstmt.setString(1, boardName);
+
+				pstmt.executeUpdate();
+
+				ResultSet addedBoardId = pstmt.getGeneratedKeys();
+				addedBoardId.next();
+				boardId = addedBoardId.getInt(1);
+
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} finally {
 			try {
 				if (conn != null) {
 					conn.close();
@@ -341,46 +245,43 @@ public class ArticleDao {
 			}
 
 			sql = "SELECT * FROM board ";
-			
+
 			PreparedStatement pstmt;
 			try {
 				pstmt = conn.prepareStatement(sql);
-				
+
 				ResultSet rs = pstmt.executeQuery();
 
-				while(rs.next()) {
-					
-					if(rs.getInt("boardId") == inputedId) {
+				while (rs.next()) {
+
+					if (rs.getInt("boardId") == inputedId) {
 						int boardId = rs.getInt("boardId");
 						String boardName = rs.getString("boardName");
-						
-						Board board = new Board(boardId, boardName);						
+
+						Board board = new Board(boardId, boardName);
 						return board;
 					}
 				}
-				
-				
+
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-			}
-			finally {
-				try {
-					if (conn != null) {
-						conn.close();
+		} finally {
+			try {
+				if (conn != null) {
+					conn.close();
 
-					}
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
-
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
-			return null;
 		}
-	
+
+		return null;
+	}
 
 }

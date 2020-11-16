@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import JDBCtest.dto.Member;
+import JDBCtest.mysqlutil.MysqlUtil;
 
 public class MemberDao {
 
@@ -20,6 +21,7 @@ public class MemberDao {
 	String userPw;
 	String sql;
 	List<Member> members;
+	
 	
 	public MemberDao() {
 
@@ -34,7 +36,7 @@ public class MemberDao {
 	// 회원가입
 	public int join(String joinId, String joinPw, String name) {
 		int memberId = 0;
-
+		
 		try {
 		try {
 			Class.forName(driver);
