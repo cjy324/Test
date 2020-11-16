@@ -5,6 +5,8 @@ import java.util.Scanner;
 import JDBCtest.container.Container;
 import JDBCtest.controller.ArticleController;
 import JDBCtest.controller.MemberController;
+import JDBCtest.service.ArticleService;
+import JDBCtest.service.MemberService;
 
 public class testAPP {
 
@@ -16,6 +18,19 @@ public class testAPP {
 		sc = Container.scanner;
 		memberController = Container.memberController;
 		articleController = Container.articleController;
+		
+		init();
+	}
+
+	private void init() {
+		//defult 게시판
+		ArticleService articleService = Container.articleService;
+		Container.session.selectedBoardId = articleService.getDefultBoardId(1);
+		
+		//defult 로그인 멤버
+		MemberService memberService = Container.memberService;
+		Container.session.loginedMemberId = memberService.getDefultMemberId(1);
+		
 	}
 
 	public void run() {

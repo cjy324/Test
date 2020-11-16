@@ -26,6 +26,42 @@ public class MemberController {
 		else if (cmd.equals("member login")) {
 			login();
 		}
+		// 후엠아이
+		else if (cmd.equals("member whoami")) {
+			whoami(cmd);
+		}
+		// 로그아웃
+		else if (cmd.equals("member logout")) {
+			logout(cmd);
+		}
+
+	}
+
+	private void logout(String cmd) {
+		if (Container.session.loginStatus() == false) {
+			System.out.println("로그인 상태가 아님");
+			return;
+		}
+		
+		Container.session.loginedMemberId = 0;
+		
+		System.out.println("로그아웃 완료");
+		
+	}
+
+	private void whoami(String cmd) {
+		if (Container.session.loginStatus() == false) {
+			System.out.println("로그인 후 이용가능");
+			return;
+		}
+
+		int loginMemberId = Container.session.loginedMemberId;
+
+		Member member = memberService.getMemberByMemberId(loginMemberId);
+
+		System.out.printf("회원 번호 : %d\n", member.memberId);
+		System.out.printf("회원 아이디 : %s\n", member.loginId);
+		System.out.printf("회원 이름 : %s\n", member.name);
 
 	}
 
@@ -53,6 +89,12 @@ public class MemberController {
 	}
 
 	private void join() {
+
+		if (Container.session.loginStatus() == true) {
+			System.out.println("로그아웃 후 이용가능");
+			return;
+		}
+
 		System.out.printf("아이디 입력) ");
 		String joinId = sc.nextLine();
 

@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import JDBCtest.dto.Article;
+import JDBCtest.dto.Board;
+import JDBCtest.dto.Member;
 
 public class ArticleDao {
 	
@@ -266,5 +268,119 @@ public class ArticleDao {
 
 			}
 	}
+
+	public int boardAdd(String boardName) {
+		int boardId = 0;
+
+		try {
+		try {
+			Class.forName(driver);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		try {
+			conn = DriverManager.getConnection(url, userName, userPw);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		sql = "INSERT INTO board ";
+		sql += "SET ";
+		sql += "boardName = ?";
+		
+		PreparedStatement pstmt;
+		try {
+			pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+			pstmt.setString(1, boardName);
+
+			pstmt.executeUpdate();
+			
+			ResultSet addedBoardId = pstmt.getGeneratedKeys();
+			addedBoardId.next();
+			boardId = addedBoardId.getInt(1);
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
+		finally {
+			try {
+				if (conn != null) {
+					conn.close();
+
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+		return boardId;
+	}
+
+	public Board getBoard(int inputedId) {
+		try {
+			try {
+				Class.forName(driver);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			try {
+				conn = DriverManager.getConnection(url, userName, userPw);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			sql = "SELECT * FROM board ";
+			
+			PreparedStatement pstmt;
+			try {
+				pstmt = conn.prepareStatement(sql);
+				
+				ResultSet rs = pstmt.executeQuery();
+
+				while(rs.next()) {
+					
+					if(rs.getInt("boardId") == inputedId) {
+						int boardId = rs.getInt("boardId");
+						String boardName = rs.getString("boardName");
+						
+						Board board = new Board(boardId, boardName);						
+						return board;
+					}
+				}
+				
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			}
+			finally {
+				try {
+					if (conn != null) {
+						conn.close();
+
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+
+			return null;
+		}
+	
 
 }
