@@ -4,6 +4,7 @@ import java.util.List;
 
 import JDBCtest.container.Container;
 import JDBCtest.dao.ArticleDao;
+import JDBCtest.dao.MemberDao;
 import JDBCtest.dto.Article;
 
 public class ArticleService {
@@ -11,29 +12,26 @@ public class ArticleService {
 	ArticleDao articleDao;
 	
 	public ArticleService() {
+		
 		articleDao = Container.articleDao;
 	}
-	
 
-	public List<Article> getArticles() {	
+	public int add(int boardId, String title, String body, int memberId) {
+		
+		return articleDao.add( boardId,  title,  body,  memberId);
+	}
+
+	public List<Article> getArticles() {
 		return articleDao.getArticles();
-	
 	}
 
-
-	public int add(String title, String body) {
-		return articleDao.add(title,body);
-	}
-
-
-	public void deleteArticleById(int inputedId) {
-		articleDao.deleteArticleById(inputedId);
+	public void modifyArticle(int inputedId, String title, String body) {
+		articleDao.modifyArticle(inputedId, title,  body);
 		
 	}
 
-
-	public void modifyArticleById(int inputedId, String modifyTitle, String modifyBody) {
-		articleDao.modifyArticleById(inputedId,modifyTitle,modifyBody);
+	public void deleteArticle(int inputedId) {
+		articleDao.deleteArticle(inputedId);
 		
 	}
 

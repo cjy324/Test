@@ -2,6 +2,7 @@ package JDBCtest.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -11,148 +12,259 @@ import java.util.List;
 import JDBCtest.dto.Article;
 
 public class ArticleDao {
-
-	private List<Article> articles;
-	private Connection conn;
-	private Statement state;
-	private String driver;
-	private String url;
-	private String sql;
-
+	
+	String driver;
+	Connection conn;
+	String url;
+	String userName;
+	String userPw;
+	String sql;
+	
+	
 	public ArticleDao() {
-		articles = new ArrayList<>();
-		conn = null;
-		state = null;
-		driver = "com.mysql.cj.jdbc.Driver";   
-		url = "jdbc:mysql://localhost/a2?serverTimezone=UTC";
-		sql = "";
+
+		driver = "com.mysql.cj.jdbc.Driver";
+		url = "jdbc:mysql://127.0.0.1:3306/textBoard?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull&connectTimeout=60000&socketTimeout=60000";
+		userName = "sbsst";
+		userPw = "sbs123414";
+
+		
+	}
+	
+	// 게시물 생성
+	public int add(int boardId, String title, String body, int memberId) {
+		int id = 0;
+
+		try {
+		try {
+			Class.forName(driver);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		try {
+			conn = DriverManager.getConnection(url, userName, userPw);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		sql = "INSERT INTO article ";
+		sql += "SET ";
+		sql += "regDate = NOW(), ";
+		sql += "updateDate = NOW(), ";
+		sql += "title = ?, ";
+		sql += "body = ?, ";
+		sql += "memberId = ?,";
+		sql += "boardId = ?";
+		
+		PreparedStatement pstmt;
+		try {
+			pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+			pstmt.setString(1, title);
+			pstmt.setString(2, body);
+			pstmt.setInt(3, memberId);
+			pstmt.setInt(4, boardId);
+			
+			pstmt.executeUpdate();
+			
+			ResultSet addedArticleId = pstmt.getGeneratedKeys();
+			addedArticleId.next();
+			id = addedArticleId.getInt(1);
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
+		finally {
+			try {
+				if (conn != null) {
+					conn.close();
+
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+		return id;
 	}
 
-	// 리스팅
+	// 게시물 리스팅
 	public List<Article> getArticles() {
+		List<Article> articles = new ArrayList<>();
 		try {
-			Class.forName(driver); //driver를 깨우는 것?
-			//이전에는 반드시 사전 실행되었어야 했지만
-			//최근에는 자동으로 실행되서 굳이 작성하지 않아도 됨
+			try {
+				Class.forName(driver);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-			conn = DriverManager.getConnection(url, "sbsst", "sbs123414");
-
-			state = conn.createStatement();
+			try {
+				conn = DriverManager.getConnection(url, userName, userPw);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			sql = "SELECT * FROM article";
-			ResultSet rs = state.executeQuery(sql);
 
-			while (rs.next()) {
-				int id = rs.getInt("id");
-				String regDate = rs.getString("regDate");
-				String title = rs.getString("title");
-				String body = rs.getString("body");
-				String nickname = rs.getString("nickname");
-				int hit = rs.getInt("hit");
+			
+			PreparedStatement pstmt;
+			try {
+				pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 
-				Article article = new Article();
+				ResultSet rs = pstmt.executeQuery();
+				
+				while(rs.next()) {
+					int id = rs.getInt("id");
+					String regDate = rs.getString("regDate");
+					String updateDate = rs.getString("updateDate");
+					String title = rs.getString("title");
+					String body = rs.getString("body");
+					int boardId = rs.getInt("boardId");
+					int memberId = rs.getInt("memberId");
+					
+					Article article = new Article(id,regDate,updateDate,title,body,boardId,memberId);
+					
+					articles.add(article);
 
-				article.id = id;
-				article.regDate = regDate;
-				article.title = title;
-				article.body = body;
-				article.nickname = nickname;
-				article.hit = hit;
-				articles.add(article);
+				}
+				
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			}
-			rs.close();
-			state.close();
-			conn.close();
+			finally {
+				try {
+					if (conn != null) {
+						conn.close();
 
-		} catch (ClassNotFoundException e) {
-			System.out.println("드라이버 로딩 실패");
-		} catch (SQLException e) {
-			System.out.println("에러 : " + e);
-		}
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
+			}
+		
+		
 		return articles;
-
 	}
 
-	// 추가
-	public int add(String title, String body) {
+	// 게시물 수정
+	public void modifyArticle(int inputedId, String title, String body) {
 		try {
-			Class.forName(driver);
+			try {
+				Class.forName(driver);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-			conn = DriverManager.getConnection(url, "sbsst", "sbs123414");
+			try {
+				conn = DriverManager.getConnection(url, userName, userPw);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-			state = conn.createStatement();
+			sql = "UPDATE article ";
+			sql += "SET ";
+			sql += "updateDate = NOW(), ";
+			sql += "title = ?, ";
+			sql += "body = ? ";
+			sql += "WHERE id = ? ";
 
-			sql = "INSERT INTO article " + "set " + "regDate = NOW()," + "title = " + "'" + title + "'," + "body = "
-					+ "'" + body + "'," + "nickname = 'nickname'," + "hit = 10;";
-
-			int cnt = state.executeUpdate(sql);
-			System.out.println(cnt > 0 ? "등록성공" : "등록실패");
-
-			conn.close();
-			state.close();
-		}
-
-		catch (ClassNotFoundException e) {
-			System.out.println("드라이버 로딩 실패");
-		} catch (SQLException e) {
-			System.out.println("에러 : " + e);
-		}
-
-		return 0;
-	}
-
-	// 삭제
-	public void deleteArticleById(int inputedId) {
-		try {
-			Class.forName(driver);
-
-			conn = DriverManager.getConnection(url, "sbsst", "sbs123414");
-
-			state = conn.createStatement();
-
-			sql = "DELETE FROM article " + "WHERE id = " + inputedId + ";";
-
-			int cnt = state.executeUpdate(sql);
-			System.out.println(cnt > 0 ? "삭제성공" : "삭제실패");
-
-			conn.close();
-			state.close();
-		}
-
-		catch (ClassNotFoundException e) {
-			System.out.println("드라이버 로딩 실패");
-		} catch (SQLException e) {
-			System.out.println("에러 : " + e);
-		}
-	}
-
-	// 수정
-	public void modifyArticleById(int inputedId, String modifyTitle, String modifyBody) {
-		try {
-			Class.forName(driver);
-
-			conn = DriverManager.getConnection(url, "sbsst", "sbs123414");
-
-			state = conn.createStatement();
-
-			sql = "UPDATE article " + "SET title = " + "'" + modifyTitle + "'" + "," + "`body` = " + "'" + modifyBody
-					+ "'" + "WHERE id = " + inputedId + ";";
 			
-			state.executeUpdate(sql);
-			int cnt = state.executeUpdate(sql);
-			System.out.println(cnt > 0 ? "수정성공" : "수정실패");
+			PreparedStatement pstmt;
+			
+			try {
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, title);
+				pstmt.setString(2, body);
+				pstmt.setInt(3, inputedId);
+				
+				
+				pstmt.executeUpdate();
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-			conn.close();
-			state.close();
-		}
+			}
+			finally {
+				try {
+					if (conn != null) {
+						conn.close();
 
-		catch (ClassNotFoundException e) {
-			System.out.println("드라이버 로딩 실패");
-		} catch (SQLException e) {
-			System.out.println("에러 : " + e);
-		}
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+	}
+
+	// 게시물 삭제
+	public void deleteArticle(int inputedId) {
+		try {
+			try {
+				Class.forName(driver);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			try {
+				conn = DriverManager.getConnection(url, userName, userPw);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			sql = "DELETE FROM article ";
+			sql += "WHERE id = ? ";
+
+			
+			PreparedStatement pstmt;
+			
+			try {
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, inputedId);
+				
+				
+				pstmt.executeUpdate();
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			}
+			finally {
+				try {
+					if (conn != null) {
+						conn.close();
+
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
 	}
 
 }
