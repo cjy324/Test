@@ -166,19 +166,20 @@ public class ArticleController {
 
 	private void list(String cmd) {
 
-		Board board = articleService.getBoard(Container.session.selectedBoardId);
+//		Board board = articleService.getBoard(Container.session.selectedBoardId);
 
-		List<Article> boardArticles = articleService.getBoardArticlesByBoardId(board.boardId);
+//		List<Article> boardArticles = articleService.getBoardArticlesByBoardId(board.boardId);
 
-		if (boardArticles.size() <= 0) {
-			System.out.printf("== %s 게시판 내 게시물이 없습니다. ==\n", board.boardName);
-			return;
-		}
+//		if (boardArticles.size() <= 0) {
+//			System.out.printf("== %s 게시판 내 게시물이 없습니다. ==\n", board.boardName);
+//			return;
+//		}
 
-		System.out.printf("== %s 게시판 게시물 리스트 ==\n", board.boardName);
+		System.out.printf("==게시판 게시물 리스트 ==\n");
 		System.out.println("번호 / 제목 / 작성자 / 작성일");
-
-		for (Article article : boardArticles) {
+		
+		
+		for (Article article : articleService.getArticles()) {
 			Member member = memberService.getMemberByMemberId(article.memberId);
 			System.out.printf("%d / %s / %s / %s\n", article.id, article.title, member.name, article.regDate);
 		}

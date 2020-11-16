@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -98,21 +99,29 @@ public class ArticleDao {
 
 	// 게시물 리스팅
 	public List<Article> getArticles() {
-		List<Article> articles = new ArrayList<>();
+//		List<Article> articles = new ArrayList<>();
 
 		MysqlUtil.setDBInfo("localhost", "sbsst", "sbs123414", "textBoard");
-
 		MysqlUtil.setDevMode(true);
-		
-		SecSql sql = new SecSql();
-		
-		sql.append("SELECT * FROM article");
 
-		System.out.println(sql);
+		List<Map<String, Object>> articleListMap = new ArrayList<Map<String, Object>>();
+
+		SecSql sql = new SecSql();
+		sql.append("SELECT * FROM article");
+		
+
+
+		Map<String, Object> articleMap = MysqlUtil.selectRow(sql.append("SELECT * FROM article"));
+		System.out.println(articleMap);
+		
+		articleListMap.add(articleMap);
+		System.out.println(articleListMap);
+
+//		articleMap.put("id", );
 
 		MysqlUtil.closeConnection();
 
-		return articles;
+		return null;
 	}
 
 	// 게시물 수정
@@ -122,10 +131,11 @@ public class ArticleDao {
 
 		MysqlUtil.setDevMode(true);
 
-		new SecSql().append("UPDATE article SET updateDate = NOW(),").append("title = ?", title).append("body = ?", body).append("WHERE id = ?", inputedId);
+		new SecSql().append("UPDATE article SET updateDate = NOW(),").append("title = ?", title)
+				.append("body = ?", body).append("WHERE id = ?", inputedId);
 
 		MysqlUtil.closeConnection();
-		
+
 	}
 
 	// 게시물 삭제
