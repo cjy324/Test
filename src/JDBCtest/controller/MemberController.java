@@ -6,7 +6,7 @@ import JDBCtest.container.Container;
 import JDBCtest.dto.Member;
 import JDBCtest.service.MemberService;
 
-public class MemberController {
+public class MemberController extends Controller {
 
 	Scanner sc;
 	MemberService memberService;
@@ -42,11 +42,11 @@ public class MemberController {
 			System.out.println("로그인 상태가 아님");
 			return;
 		}
-		
+
 		Container.session.loginedMemberId = 0;
-		
-		System.out.println("로그아웃 완료");
-		
+
+		System.out.println("== 로그아웃 완료 ==");
+
 	}
 
 	private void whoami(String cmd) {
@@ -58,7 +58,7 @@ public class MemberController {
 		int loginMemberId = Container.session.loginedMemberId;
 
 		Member member = memberService.getMemberByMemberId(loginMemberId);
-
+		System.out.println("== 회원 정보 ==");
 		System.out.printf("회원 번호 : %d\n", member.memberId);
 		System.out.printf("회원 아이디 : %s\n", member.loginId);
 		System.out.printf("회원 이름 : %s\n", member.name);
@@ -66,6 +66,7 @@ public class MemberController {
 	}
 
 	private void login() {
+		System.out.println("== 로그인 ==");
 		System.out.printf("아이디) ");
 		String loginId = sc.nextLine();
 
@@ -95,6 +96,7 @@ public class MemberController {
 			return;
 		}
 
+		System.out.println("== 회원가입 ==");
 		System.out.printf("아이디 입력) ");
 		String joinId = sc.nextLine();
 

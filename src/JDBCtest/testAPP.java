@@ -1,14 +1,12 @@
 package JDBCtest;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 import JDBCtest.container.Container;
 import JDBCtest.controller.ArticleController;
+import JDBCtest.controller.Controller;
 import JDBCtest.controller.MemberController;
 import JDBCtest.mysqlutil.MysqlUtil;
-import JDBCtest.mysqlutil.SecSql;
 import JDBCtest.service.ArticleService;
 import JDBCtest.service.MemberService;
 
@@ -23,49 +21,65 @@ public class testAPP {
 		memberController = Container.memberController;
 		articleController = Container.articleController;
 
-
-	//	init();
+		init();
 	}
 
-	/*
-	 * private void init() { //defult 게시판 ArticleService articleService =
-	 * Container.articleService; Container.session.selectedBoardId =
-	 * articleService.getDefultBoardId(1);
-	 * 
-	 * //defult 로그인 멤버 MemberService memberService = Container.memberService;
-	 * Container.session.loginedMemberId = memberService.getDefultMemberId(1);
-	 * 
-	 * }
-	 */
+	private void init() {
+		// DB연결
+		MysqlUtil.setDBInfo("localhost", "sbsst", "sbs123414", "textBoard");
+
+		// defult 게시판
+		ArticleService articleService = Container.articleService;
+		Container.session.selectedBoardId = articleService.getDefultBoardId(1);
+
+		// defult 로그인 멤버
+		MemberService memberService = Container.memberService;
+		Container.session.loginedMemberId = memberService.getDefultMemberId(1);
+
+	}
 
 	public void run() {
-		
+
 		while (true) {
 			System.out.printf("명령어) ");
 			String cmd = sc.nextLine();
 
-			if (cmd.startsWith("member ")) {
-			
-				memberController.doCmd(cmd);
+			// DB연결
+			MysqlUtil.setDBInfo("localhost", "sbsst", "sbs123414", "textBoard");
 
-			}
+			// DB 연결 종료 필요한지 확인
+			boolean needToExit = false;
 
-			else if (cmd.startsWith("article ")) {
-
-				articleController.doCmd(cmd);
-
-
-			} else if (cmd.equals("exit")) {
+			if (cmd.equals("exit")) {
 				System.out.println("종료");
-				MysqlUtil.closeConnection();
-
-				break;
+				needToExit = true;
+				// DB 연결 종료 필요
 			}
+			// 명령어를 작성할 때마다 controller를 선택해야하니 Controller라는 상위개념이 필요
+			else {
+				Controller controller = getControllerByCmd(cmd);
+				if (controller != null) {
+					controller.doCmd(cmd);
+				}
+			}
+
+			// DB 연결 종료 필요
+			MysqlUtil.closeConnection();
+
+			if (needToExit) {
+				break;
+			} // 만약, DB 연결 종료됐으면 프로그램도 종료
 
 		}
-
 		sc.close();
-
 	}
 
+	private Controller getControllerByCmd(String cmd) {
+		if (cmd.startsWith("member ")) {
+			return memberController;
+		} else if (cmd.startsWith("article ")) {
+			return articleController;
+		}
+		return null;
+	}
 }

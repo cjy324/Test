@@ -8,6 +8,7 @@ import JDBCtest.dao.ArticleDao;
 import JDBCtest.dao.MemberDao;
 import JDBCtest.dto.Article;
 import JDBCtest.dto.Board;
+import JDBCtest.dto.Reply;
 
 public class ArticleService {
 	
@@ -37,14 +38,14 @@ public class ArticleService {
 		
 	}
 
-	public boolean getArticle(int inputedId) {
+	public Article getArticle(int inputedId) {
 		for(Article article : articleDao.getArticles()) {
 			if(article.id == inputedId) {
-				return true;
+				return article;
 			}
 		}
 		
-		return false;
+		return null;
 	}
 
 	public Article detailArticle(int inputedId) {
@@ -62,7 +63,7 @@ public class ArticleService {
 	}
 
 	public Board getBoard(int inputedId) {
-		return articleDao.getBoard( inputedId);
+		return articleDao.getBoard(inputedId);
 	}
 
 	public int getDefultBoardId(int i) {
@@ -71,6 +72,7 @@ public class ArticleService {
 	}
 
 	public List<Article> getBoardArticlesByBoardId(int boardId) {
+		
 		List<Article> boardArticles = new ArrayList<>();
 		for(Article article : articleDao.getArticles()) {
 			if(article.boardId == boardId) {
@@ -78,6 +80,22 @@ public class ArticleService {
 			}
 		}
 		return boardArticles;
+	}
+
+	public int addReply(int articleId, String replyBody, int replyWriterId) {
+		return articleDao.addReply(articleId, replyBody, replyWriterId);
+	}
+
+	public List<Reply> getArticleReplies(int inputedId) {
+		List<Reply> getArticleReplies = new ArrayList<>();
+		for(Reply reply : articleDao.getReplies()) {
+			if(reply.replyArticleId == inputedId) {
+				getArticleReplies.add(reply);
+			}
+		}
+				
+				
+		return getArticleReplies;
 	}
 
 }
