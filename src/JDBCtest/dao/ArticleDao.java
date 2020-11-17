@@ -26,7 +26,6 @@ public class ArticleDao {
 				.append("boardId = ?", boardId);
 
 		return MysqlUtil.insert(sql);
-
 	}
 
 	// 게시물 리스팅
@@ -44,42 +43,35 @@ public class ArticleDao {
 
 			articles.add(article);
 		}
-
 		return articles;
 	}
 
 	// 게시물 수정
 	public void modifyArticle(int inputedId, String title, String body) {
-
 		SecSql sql = new SecSql();
 
 		sql.append("UPDATE article ").append("SET updateDate = NOW(),").append("title = ?, ", title)
 				.append("body = ?, ", body).append("WHERE id = ?", inputedId);
 
 		MysqlUtil.update(sql);
-
 	}
 
 	// 게시물 삭제
 	public void deleteArticle(int inputedId) {
-
 		SecSql sql = new SecSql();
 
 		sql.append("DELETE FROM article ").append("WHERE id = ?", inputedId);
 
 		MysqlUtil.delete(sql);
-
 	}
 
-	// 게시판 추가
+	// 게시판 생성
 	public int boardAdd(String boardName) {
-
 		SecSql sql = new SecSql();
 
 		sql.append("INSERT INTO board ").append("SET ").append("boardName = ? ", boardName);
 
 		return MysqlUtil.insert(sql);
-
 	}
 
 	// 게시판 선택
