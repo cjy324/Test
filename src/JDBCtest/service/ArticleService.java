@@ -108,4 +108,14 @@ public class ArticleService {
 		articleDao.replyDelete(inputedId);
 	}
 
+	public List<Article> getBoardArticlesForPrintByBoardId(int boardId) {
+		List<Article> boardArticles = new ArrayList<>();
+		for (Article article : articleDao.getArticlesForPrint()) {
+			if (article.boardId == boardId) {
+				boardArticles.add(article);
+			}
+		}
+		return boardArticles;
+	}
+
 }

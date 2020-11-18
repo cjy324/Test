@@ -269,7 +269,7 @@ public class ArticleController extends Controller {
 
 		Board board = articleService.getBoard(Container.session.selectedBoardId);
 
-		List<Article> boardArticles = articleService.getBoardArticlesByBoardId(board.boardId);
+		List<Article> boardArticles = articleService.getBoardArticlesByBoardId(board.boardId); //articles를 가져오기 위한 쿼리
 
 		if (boardArticles.size() <= 0) {
 			System.out.printf("(현재 (%s 게시판) 내 등록된 게시물이 없습니다.)\n", board.boardName);
@@ -279,11 +279,11 @@ public class ArticleController extends Controller {
 		System.out.printf("== (%s 게시판) 게시물 리스트 ==\n", board.boardName);
 		System.out.println("번호 / 제목 / 작성자 / 작성일");
 
-		List<Article> articles = articleService.getBoardArticlesByBoardId(board.boardId);
+		List<Article> articles = articleService.getBoardArticlesForPrintByBoardId(board.boardId); //오직 리스트 출력용으로 실행하는 쿼리
 
 		for (Article article : articles) {
-			Member member = memberService.getMemberByMemberId(article.memberId);
-			System.out.printf("%d / %s / %s / %s\n", article.id, article.title, member.name, article.regDate);
+			String writerName = article.extra_memberName;
+			System.out.printf("%d / %s / %s / %s\n", article.id, article.title, writerName, article.regDate);
 		}
 	}
 

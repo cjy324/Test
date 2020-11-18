@@ -28,12 +28,13 @@ public class ArticleDao {
 		return MysqlUtil.insert(sql);
 	}
 
-	// 게시물 리스팅
+	// 게시물 리스팅x  => 게시물s 가져오기만 수행 
 	public List<Article> getArticles() {
 
 		SecSql sql = new SecSql();
 
-		sql.append("SELECT * FROM article");
+		sql.append("SELECT *");
+		sql.append("FROM article ");
 
 		List<Article> articles = new ArrayList<Article>();
 		List<Map<String, Object>> articleListMap = MysqlUtil.selectRows(sql); // sql을 입력받고 명령어 수행 후 출력되는 값을 돌려받아
@@ -41,7 +42,7 @@ public class ArticleDao {
 
 		for (Map<String, Object> articleMap : articleListMap) {
 			Article article = new Article(articleMap);
-
+			
 			articles.add(article);
 		}
 		return articles;
@@ -102,7 +103,8 @@ public class ArticleDao {
 
 		return MysqlUtil.insert(sql);
 	}
-
+	
+	//댓글s 가져오기
 	public List<Reply> getReplies() {
 		SecSql sql = new SecSql();
 
@@ -119,7 +121,8 @@ public class ArticleDao {
 
 		return replies;
 	}
-
+	
+	//댓글 가져오기
 	public Reply getReply(int inputedId) {
 		SecSql sql = new SecSql();
 
@@ -133,7 +136,8 @@ public class ArticleDao {
 
 		return new Reply(replyMap);
 	}
-
+	
+	//댓글 수정
 	public void replyModify(int inputedId, String replyBody) {
 		SecSql sql = new SecSql();
 
@@ -145,6 +149,7 @@ public class ArticleDao {
 
 	}
 
+	//댓글 삭제
 	public void replyDelete(int inputedId) {
 		SecSql sql = new SecSql();
 
@@ -153,6 +158,27 @@ public class ArticleDao {
 
 		MysqlUtil.delete(sql);
 
+	}
+
+	//출력용 게시물 리스트 가져오기(쿼리 한개만 수행)
+	public List<Article> getArticlesForPrint() { //오직 리스트 출력용으로만 사용될 함수
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT article.*, member.name AS extra_memberName"); //inner join을 통해 쿼리를 한번만 실행해도
+		sql.append("FROM article");									//멤버의 이름까지 가져올 수 있도록 함
+		sql.append("INNER JOIN member");								//단, 이 퀴리 실행시 article 클래스 안에 member.name이라는 변수가 존재하지 않으므로
+		sql.append("ON article.memberId = member.memberId");			//member.name를 extra_memberName로 명명후 article 클래스에 extra_memberName 변수 선언
+											
+		
+		List<Article> articles = new ArrayList<Article>();
+		List<Map<String, Object>> articleListMap = MysqlUtil.selectRows(sql); 
+		
+		for (Map<String, Object> articleMap : articleListMap) {
+			Article article = new Article(articleMap);
+			
+			articles.add(article);
+		}
+		return articles;
 	}
 
 }

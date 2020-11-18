@@ -45,7 +45,7 @@ public class testAPP {
 
 			// DB연결
 			MysqlUtil.setDBInfo("localhost", "sbsst", "sbs123414", "textBoard");
-
+			MysqlUtil.setDevMode(true);  //어떤 쿼리가 실행되었는지 확인할 수 있는 모드
 			// DB 연결 종료 필요한지 확인
 			boolean needToExit = false;
 
