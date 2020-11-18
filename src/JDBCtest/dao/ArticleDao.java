@@ -36,7 +36,8 @@ public class ArticleDao {
 		sql.append("SELECT * FROM article");
 
 		List<Article> articles = new ArrayList<Article>();
-		List<Map<String, Object>> articleListMap = MysqlUtil.selectRows(sql);   //sql을 입력받고 명령어 수행 후 출력되는 값을 돌려받아 articleListMap에 넣어주는 코드
+		List<Map<String, Object>> articleListMap = MysqlUtil.selectRows(sql); // sql을 입력받고 명령어 수행 후 출력되는 값을 돌려받아
+																				// articleListMap에 넣어주는 코드
 
 		for (Map<String, Object> articleMap : articleListMap) {
 			Article article = new Article(articleMap);
@@ -65,21 +66,21 @@ public class ArticleDao {
 		MysqlUtil.delete(sql);
 	}
 
-	// 게시판 생성
-	public int boardAdd(String boardName) {
-		SecSql sql = new SecSql();
+	// 게시판 추가
+	public int addBoard(String boardName) {
 
-		sql.append("INSERT INTO board ").append("SET ").append("boardName = ? ", boardName);
+		SecSql sql = new SecSql();
+		sql.append("INSERT INTO board ");
+		sql.append("SET boardName = ?", boardName);
 
 		return MysqlUtil.insert(sql);
 	}
 
-	// 게시판 선택
+	// 게시판 가져오기
 	public Board getBoard(int inputedId) {
-
 		SecSql sql = new SecSql();
-		sql.append("SELECT * FROM board ");
-		sql.append("WHERE boardId = ?", inputedId);
+
+		sql.append("SELECT * FROM board WHERE boardId = ?", inputedId);
 
 		Map<String, Object> boardMap = MysqlUtil.selectRow(sql);
 
@@ -90,33 +91,68 @@ public class ArticleDao {
 		return new Board(boardMap);
 	}
 
-	public int addReply(int articleId, String replyBody, int replyWriterId) {
-		
+	// 댓글 추가
+	public int addReply(int ArticleId, String replyBody, int memberId) {
 		SecSql sql = new SecSql();
 
-		sql.append("INSERT INTO reply ").append("SET ").append("replyBody = ?, ", replyBody).append("replyArticleId = ?, ", articleId).append("replyWriterId = ? ", replyWriterId);
+		sql.append("INSERT INTO reply ");
+		sql.append("SET replyBody = ?, ", replyBody);
+		sql.append("replyArticleId = ?, ", ArticleId);
+		sql.append("replyWriterId = ? ", memberId);
 
 		return MysqlUtil.insert(sql);
-
 	}
 
 	public List<Reply> getReplies() {
-	
 		SecSql sql = new SecSql();
 
 		sql.append("SELECT * FROM reply");
-		
+
 		List<Reply> replies = new ArrayList<>();
 		List<Map<String, Object>> replyMapList = MysqlUtil.selectRows(sql);
-		
-		for(Map<String, Object> replyMap : replyMapList) {
+
+		for (Map<String, Object> replyMap : replyMapList) {
 			Reply reply = new Reply(replyMap);
-			
+
 			replies.add(reply);
 		}
-		
-		
+
 		return replies;
+	}
+
+	public Reply getReply(int inputedId) {
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT * FROM reply WHERE replyId = ?", inputedId);
+
+		Map<String, Object> replyMap = MysqlUtil.selectRow(sql);
+
+		if (replyMap.isEmpty()) {
+			return null;
+		}
+
+		return new Reply(replyMap);
+	}
+
+	public void replyModify(int inputedId, String replyBody) {
+		SecSql sql = new SecSql();
+
+		sql.append("UPDATE reply ");
+		sql.append("SET replyBody = ? ", replyBody);
+		sql.append("WHERE replyId = ? ", inputedId);
+
+		MysqlUtil.update(sql);
+
+	}
+
+	public void replyDelete(int inputedId) {
+		SecSql sql = new SecSql();
+
+		sql.append("DELETE FROM reply ");
+		sql.append("WHERE replyId = ? ", inputedId);
+
+		MysqlUtil.delete(sql);
+
 	}
 
 }

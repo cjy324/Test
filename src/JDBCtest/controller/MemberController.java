@@ -39,7 +39,7 @@ public class MemberController extends Controller {
 
 	private void logout(String cmd) {
 		if (Container.session.loginStatus() == false) {
-			System.out.println("로그인 상태가 아님");
+			System.out.println("(로그인 상태가 아닙니다.)");
 			return;
 		}
 
@@ -51,7 +51,7 @@ public class MemberController extends Controller {
 
 	private void whoami(String cmd) {
 		if (Container.session.loginStatus() == false) {
-			System.out.println("로그인 후 이용가능");
+			System.out.println("(로그인 후 이용가능)");
 			return;
 		}
 
@@ -66,6 +66,12 @@ public class MemberController extends Controller {
 	}
 
 	private void login() {
+		
+		if (Container.session.loginStatus() == true) {
+			System.out.println("(로그아웃 후 이용가능)");
+			return;
+		}
+		
 		System.out.println("== 로그인 ==");
 		System.out.printf("아이디) ");
 		String loginId = sc.nextLine();
@@ -85,14 +91,14 @@ public class MemberController extends Controller {
 			return;
 		}
 
-		System.out.printf("%s님 로그인 완료\n", member.name);
+		System.out.printf("(%s님, 반갑습니다.)\n", member.name);
 		Container.session.loginedMemberId = member.memberId;
 	}
 
 	private void join() {
 
 		if (Container.session.loginStatus() == true) {
-			System.out.println("로그아웃 후 이용가능");
+			System.out.println("(로그아웃 후 이용가능)");
 			return;
 		}
 
@@ -114,7 +120,7 @@ public class MemberController extends Controller {
 
 		int memberId = memberService.join(joinId, joinPw, name);
 
-		System.out.printf("%d번 회원 회원가입 완료\n", memberId);
+		System.out.printf("== %d번 회원 회원가입 완료 ==\n", memberId);
 	}
 
 }

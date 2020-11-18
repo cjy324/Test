@@ -21,18 +21,17 @@ public class testAPP {
 		memberController = Container.memberController;
 		articleController = Container.articleController;
 
-		init();
+		 init();
 	}
 
-	private void init() {
-		// DB연결
+	private void init() { // DB연결
 		MysqlUtil.setDBInfo("localhost", "sbsst", "sbs123414", "textBoard");
 
-		// defult 게시판
+		// defult 게시판 
 		ArticleService articleService = Container.articleService;
 		Container.session.selectedBoardId = articleService.getDefultBoardId(1);
 
-		// defult 로그인 멤버
+		// defult 로그인 멤버 
 		MemberService memberService = Container.memberService;
 		Container.session.loginedMemberId = memberService.getDefultMemberId(1);
 
