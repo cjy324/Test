@@ -62,16 +62,17 @@ public class MemberController extends Controller {
 		System.out.printf("회원 번호 : %d\n", member.memberId);
 		System.out.printf("회원 아이디 : %s\n", member.loginId);
 		System.out.printf("회원 이름 : %s\n", member.name);
+		System.out.printf("회원 유형 : %s\n", member.getType());   //20.11.19 추가
 
 	}
 
 	private void login() {
-		
+
 		if (Container.session.loginStatus() == true) {
 			System.out.println("(로그아웃 후 이용가능)");
 			return;
 		}
-		
+
 		System.out.println("== 로그인 ==");
 		System.out.printf("아이디) ");
 		String loginId = sc.nextLine();
@@ -91,8 +92,17 @@ public class MemberController extends Controller {
 			return;
 		}
 
-		System.out.printf("(%s님, 반갑습니다.)\n", member.name);
+		if (member.isAdmin() == false) {
+			System.out.printf("(%s님, 반갑습니다.)\n", member.name);
+			Container.session.loginedMemberId = member.memberId;
+			return;
+		}
+
+		System.out.printf("('관리자'로 로그인하였습니다.)\n", member.name);
 		Container.session.loginedMemberId = member.memberId;
+		Container.session.mangerMemberId = member.memberId;
+		
+
 	}
 
 	private void join() {

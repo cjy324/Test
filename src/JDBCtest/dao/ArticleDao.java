@@ -6,7 +6,9 @@ import java.util.Map;
 
 import JDBCtest.dto.Article;
 import JDBCtest.dto.Board;
+import JDBCtest.dto.Recommand;
 import JDBCtest.dto.Reply;
+import JDBCtest.dto.View;
 import JDBCtest.mysqlutil.MysqlUtil;
 import JDBCtest.mysqlutil.SecSql;
 
@@ -28,7 +30,7 @@ public class ArticleDao {
 		return MysqlUtil.insert(sql);
 	}
 
-	// 게시물 리스팅x  => 게시물s 가져오기만 수행 
+	// 게시물 리스팅x => 게시물s 가져오기만 수행
 	public List<Article> getArticles() {
 
 		SecSql sql = new SecSql();
@@ -42,7 +44,7 @@ public class ArticleDao {
 
 		for (Map<String, Object> articleMap : articleListMap) {
 			Article article = new Article(articleMap);
-			
+
 			articles.add(article);
 		}
 		return articles;
@@ -52,8 +54,11 @@ public class ArticleDao {
 	public void modifyArticle(int inputedId, String title, String body) {
 		SecSql sql = new SecSql();
 
-		sql.append("UPDATE article ").append("SET updateDate = NOW(),").append("title = ?, ", title)
-				.append("body = ?, ", body).append("WHERE id = ?", inputedId);
+		sql.append("UPDATE article");
+		sql.append("SET updateDate = NOW(),");
+		sql.append("title = ?,", title);
+		sql.append("body = ?", body);
+		sql.append("WHERE id = ?", inputedId);
 
 		MysqlUtil.update(sql);
 	}
@@ -103,8 +108,8 @@ public class ArticleDao {
 
 		return MysqlUtil.insert(sql);
 	}
-	
-	//댓글s 가져오기
+
+	// 댓글s 가져오기
 	public List<Reply> getReplies() {
 		SecSql sql = new SecSql();
 
@@ -121,8 +126,8 @@ public class ArticleDao {
 
 		return replies;
 	}
-	
-	//댓글 가져오기
+
+	// 댓글 가져오기
 	public Reply getReply(int inputedId) {
 		SecSql sql = new SecSql();
 
@@ -136,8 +141,8 @@ public class ArticleDao {
 
 		return new Reply(replyMap);
 	}
-	
-	//댓글 수정
+
+	// 댓글 수정
 	public void replyModify(int inputedId, String replyBody) {
 		SecSql sql = new SecSql();
 
@@ -149,7 +154,7 @@ public class ArticleDao {
 
 	}
 
-	//댓글 삭제
+	// 댓글 삭제
 	public void replyDelete(int inputedId) {
 		SecSql sql = new SecSql();
 
@@ -160,25 +165,134 @@ public class ArticleDao {
 
 	}
 
-	//출력용 게시물 리스트 가져오기(쿼리 한개만 수행)
-	public List<Article> getArticlesForPrint() { //오직 리스트 출력용으로만 사용될 함수
+	// 출력용 게시물 리스트 가져오기(쿼리 한개만 수행)
+	public List<Article> getArticlesForPrint() { // 오직 리스트 출력용으로만 사용될 함수
 		SecSql sql = new SecSql();
 
-		sql.append("SELECT article.*, member.name AS extra_memberName"); //inner join을 통해 쿼리를 한번만 실행해도
-		sql.append("FROM article");									//멤버의 이름까지 가져올 수 있도록 함
-		sql.append("INNER JOIN member");								//단, 이 퀴리 실행시 article 클래스 안에 member.name이라는 변수가 존재하지 않으므로
-		sql.append("ON article.memberId = member.memberId");			//member.name를 extra_memberName로 명명후 article 클래스에 extra_memberName 변수 선언
-											
-		
+		sql.append("SELECT article.*, member.name AS extra_memberName"); // inner join을 통해 쿼리를 한번만 실행해도
+		sql.append("FROM article"); // 멤버의 이름까지 가져올 수 있도록 함
+		sql.append("INNER JOIN member"); // 단, 이 퀴리 실행시 article 클래스 안에 member.name이라는 변수가 존재하지 않으므로
+		sql.append("ON article.memberId = member.memberId"); // member.name를 extra_memberName로 명명후 article 클래스에
+																// extra_memberName 변수 선언
+
 		List<Article> articles = new ArrayList<Article>();
-		List<Map<String, Object>> articleListMap = MysqlUtil.selectRows(sql); 
-		
+		List<Map<String, Object>> articleListMap = MysqlUtil.selectRows(sql);
+
 		for (Map<String, Object> articleMap : articleListMap) {
 			Article article = new Article(articleMap);
-			
+
 			articles.add(article);
 		}
 		return articles;
+	}
+
+	// 추천 추가
+	public int addRecommand(int id, int recommandMemberId) {
+		SecSql sql = new SecSql();
+
+		sql.append("INSERT INTO recommand");
+		sql.append("SET");
+		sql.append("recommandArticleId = ?, ", id);
+		sql.append("recommandMemberId = ? ", recommandMemberId);
+
+		return MysqlUtil.insert(sql);
+	}
+
+	// 추천 중복 확인
+	public Recommand getRecommand(int articleId, int recommandMemberId) {
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT * FROM recommand");
+		sql.append("WHERE recommandArticleId = ?", articleId);
+		sql.append("AND");
+		sql.append("recommandMemberId = ?", recommandMemberId);
+
+		Map<String, Object> recommandMap = MysqlUtil.selectRow(sql);
+
+		if (recommandMap.isEmpty()) {
+			return null;
+		}
+
+		return new Recommand(recommandMap);
+	}
+	
+	//추천 취소
+	public void cancelRecommand(int articleId, int recommandMemberId) {
+		SecSql sql = new SecSql();
+
+		sql.append("DELETE FROM recommand");
+		sql.append("WHERE recommandArticleId = ?", articleId);
+		sql.append("AND");
+		sql.append("recommandMemberId = ?", recommandMemberId);
+
+		MysqlUtil.delete(sql);
+
+	}
+
+	//추천 가져오기
+	public Recommand getRecommandByArticleId(int articleId, int recommandMemberId) {
+		
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT * FROM recommand");
+		sql.append("WHERE recommandArticleId = ?", articleId);
+		sql.append("AND");
+		sql.append("recommandMemberId = ?", recommandMemberId);
+
+		Map<String, Object> recommandMap = MysqlUtil.selectRow(sql);
+
+		if (recommandMap.isEmpty()) {
+			return null;
+		}
+
+		return new Recommand(recommandMap);
+	}
+	
+	//추천s 가져오기
+	public List<Recommand> getRecommands() {
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT *");
+		sql.append("FROM recommand");
+
+		List<Recommand> recommands = new ArrayList<>();
+		List<Map<String, Object>> recommandsListMap = MysqlUtil.selectRows(sql); 
+
+		for (Map<String, Object> recommandMap : recommandsListMap) {
+			Recommand recommnad = new Recommand(recommandMap);
+
+			recommands.add(recommnad);
+		}
+		return recommands;
+	}
+
+	//조회수 추가
+	public void addView(int inputedId) {
+		SecSql sql = new SecSql();
+
+		sql.append("INSERT INTO view");
+		sql.append("SET");
+		sql.append("viewArticleId = ?", inputedId);
+
+		MysqlUtil.insert(sql);
+	}
+	
+	//조회수s 가져오기
+	public List<View> getViews() {
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT *");
+		sql.append("FROM view");
+
+		List<View> views = new ArrayList<>();
+		List<Map<String, Object>> viewsListMap = MysqlUtil.selectRows(sql); 
+
+		for (Map<String, Object> viewMap : viewsListMap) {
+			View view = new View(viewMap);
+
+			views.add(view);
+		}
+		return views;
 	}
 
 }
