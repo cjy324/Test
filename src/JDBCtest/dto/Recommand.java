@@ -3,15 +3,16 @@ package JDBCtest.dto;
 import java.util.Map;
 
 public class Recommand {
-
-	public Recommand(Map<String, Object> recommandMap) {
-		this.recommandId = (int)recommandMap.get("recommandId");
-		this.recommandArticleId = (int)recommandMap.get("recommandArticleId");
-		this.recommandMemberId = (int)recommandMap.get("recommandMemberId");
+	
+	public Recommand(Map<String, Object> recomandMap) {
+		this.id = (int)recomandMap.get("id");
+		this.regDate = (String)recomandMap.get("regDate");
+		this.recommandArticleId = (int)recomandMap.get("recommandArticleId");
+		this.recommandMemberId = (int)recomandMap.get("recommandMemberId");
 	}
-	public int recommandId;
-	public int recommandArticleId;
-	public int recommandMemberId;
-	
-	
+	public int id;
+	public String regDate;
+    public int recommandArticleId;
+    public int recommandMemberId;
+
 }

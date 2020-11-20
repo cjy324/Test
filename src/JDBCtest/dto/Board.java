@@ -4,18 +4,13 @@ import java.util.Map;
 
 public class Board {
 	
-	
-	public int boardId;
-	public String boardName;
-	
-	/*
-	 * public Board(int boardId, String boardName) { this.boardId = boardId;
-	 * this.boardName = boardName; }
-	 */
-
 	public Board(Map<String, Object> boardMap) {
-		this.boardId = (int)boardMap.get("boardId");
-		this.boardName = (String)boardMap.get("boardName");
+		this.id = (int)boardMap.get("id");
+		this.name = (String)boardMap.get("name");
+		this.code = (String)boardMap.get("code");
 	}
+	public int id;
+	public String name;
+	public String code;
 
 }

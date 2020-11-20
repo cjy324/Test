@@ -1,44 +1,33 @@
 package JDBCtest.dao;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import JDBCtest.dto.Member;
 import JDBCtest.mysqlutil.MysqlUtil;
 import JDBCtest.mysqlutil.SecSql;
 
-
 public class MemberDao {
 
-	List<Member> members;
-	
 	public MemberDao() {
 
-		members = new ArrayList<>();
-		
 	}
-	
-	// 회원가입
-	public int join(String joinId, String joinPw, String name) {
-		
+
+	public int join(String loginId, String loginPw, String name) {
 		SecSql sql = new SecSql();
 
-		sql.append("INSERT INTO member ");
-		sql.append("SET ");
-		sql.append("loginId = ?, ", joinId);
-		sql.append("loginPw = ?, ", joinPw);
+		sql.append("INSERT INTO member");
+		sql.append("SET loginId = ?,", loginId);
+		sql.append("loginPw = ?,", loginPw);
 		sql.append("name = ?", name);
 
 		return MysqlUtil.insert(sql);
 	}
-	
-	// 로그인 아이디 확인
-	public Member getMemberByloginId(String loginId) {
 
+	public Member getMemberByLoginId(String loginId) {
 		SecSql sql = new SecSql();
 
-		sql.append("SELECT * FROM member WHERE loginId = ?", loginId);
+		sql.append("SELECT * FROM member");
+		sql.append("WHERE loginId = ?", loginId);
 		
 		Map<String, Object> memberMap = MysqlUtil.selectRow(sql);
 		
@@ -49,21 +38,19 @@ public class MemberDao {
 		return new Member(memberMap);
 	}
 
-	// 아이디 중복 확인
-	public Member getMemberByMemberId(int memberId) {
+	public Member getMemberById(int loginMemberId) {
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT * FROM member");
+		sql.append("WHERE id = ?", loginMemberId);
 		
-			SecSql sql = new SecSql();
-
-			sql.append("SELECT * FROM member WHERE memberId = ?", memberId);
-			
-			Map<String, Object> memberMap = MysqlUtil.selectRow(sql);
-			
-			if(memberMap.isEmpty()) {
-				return null;
-			}
-			
-			return new Member(memberMap);
-
+		Map<String, Object> memberMap = MysqlUtil.selectRow(sql);
+		
+		if(memberMap.isEmpty()) {
+			return null;
+		}
+		
+		return new Member(memberMap);
 	}
 
 }

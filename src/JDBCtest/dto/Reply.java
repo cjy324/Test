@@ -3,16 +3,25 @@ package JDBCtest.dto;
 import java.util.Map;
 
 public class Reply {
-	
+
 	public Reply(Map<String, Object> replyMap) {
-		this.replyId = (int)replyMap.get("replyId");
+		this.id = (int)replyMap.get("id");
+		this.regDate = (String)replyMap.get("regDate");
 		this.replyBody = (String)replyMap.get("replyBody");
 		this.replyArticleId = (int)replyMap.get("replyArticleId");
-		this.replyWriterId = (int)replyMap.get("replyWriterId");
-	}
-	public int replyId;
-	public String replyBody;
-	public int replyArticleId;
-	public int replyWriterId;
+		this.replyMemberId = (int)replyMap.get("replyMemberId");
+		
+		if (replyMap.containsKey("extra_memberName")) {
+			this.extra_memberName = (String) replyMap.get("extra_memberName");
+		}
 
+	}
+	public int id;
+	public String regDate;
+	public String replyBody;
+    public int replyArticleId;
+    public int replyMemberId;
+    public String extra_memberName;
+	
+	
 }

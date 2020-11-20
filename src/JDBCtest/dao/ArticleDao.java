@@ -18,75 +18,21 @@ public class ArticleDao {
 
 	}
 
-	// 게시물 생성
-	public int add(int boardId, String title, String body, int memberId) {
-
+	public int boardAdd(String name, String code) {
 		SecSql sql = new SecSql();
 
-		sql.append("INSERT INTO article ").append("SET ").append("regDate = NOW(), ").append("updateDate = NOW(), ")
-				.append("title = ?, ", title).append("body = ?, ", body).append("memberId = ?, ", memberId)
-				.append("boardId = ?", boardId);
+		sql.append("INSERT INTO board");
+		sql.append("SET name = ?,", name);
+		sql.append("code = ?", code);
 
 		return MysqlUtil.insert(sql);
 	}
 
-	// 게시물 리스팅x => 게시물s 가져오기만 수행
-	public List<Article> getArticles() {
-
+	public Board getBoardById(int inputedId) {
 		SecSql sql = new SecSql();
 
-		sql.append("SELECT *");
-		sql.append("FROM article ");
-
-		List<Article> articles = new ArrayList<Article>();
-		List<Map<String, Object>> articleListMap = MysqlUtil.selectRows(sql); // sql을 입력받고 명령어 수행 후 출력되는 값을 돌려받아
-																				// articleListMap에 넣어주는 코드
-
-		for (Map<String, Object> articleMap : articleListMap) {
-			Article article = new Article(articleMap);
-
-			articles.add(article);
-		}
-		return articles;
-	}
-
-	// 게시물 수정
-	public void modifyArticle(int inputedId, String title, String body) {
-		SecSql sql = new SecSql();
-
-		sql.append("UPDATE article");
-		sql.append("SET updateDate = NOW(),");
-		sql.append("title = ?,", title);
-		sql.append("body = ?", body);
+		sql.append("SELECT * FROM board");
 		sql.append("WHERE id = ?", inputedId);
-
-		MysqlUtil.update(sql);
-	}
-
-	// 게시물 삭제
-	public void deleteArticle(int inputedId) {
-		SecSql sql = new SecSql();
-
-		sql.append("DELETE FROM article ").append("WHERE id = ?", inputedId);
-
-		MysqlUtil.delete(sql);
-	}
-
-	// 게시판 추가
-	public int addBoard(String boardName) {
-
-		SecSql sql = new SecSql();
-		sql.append("INSERT INTO board ");
-		sql.append("SET boardName = ?", boardName);
-
-		return MysqlUtil.insert(sql);
-	}
-
-	// 게시판 가져오기
-	public Board getBoard(int inputedId) {
-		SecSql sql = new SecSql();
-
-		sql.append("SELECT * FROM board WHERE boardId = ?", inputedId);
 
 		Map<String, Object> boardMap = MysqlUtil.selectRow(sql);
 
@@ -97,41 +43,101 @@ public class ArticleDao {
 		return new Board(boardMap);
 	}
 
-	// 댓글 추가
-	public int addReply(int ArticleId, String replyBody, int memberId) {
+	public int add(int boardId, String title, String body, int memberId) {
 		SecSql sql = new SecSql();
 
-		sql.append("INSERT INTO reply ");
-		sql.append("SET replyBody = ?, ", replyBody);
-		sql.append("replyArticleId = ?, ", ArticleId);
-		sql.append("replyWriterId = ? ", memberId);
+		sql.append("INSERT INTO article");
+		sql.append("SET regDate = NOW(),");
+		sql.append("updateDate = NOW(),");
+		sql.append("title = ?,", title);
+		sql.append("body = ?,", body);
+		sql.append("boardId = ?,", boardId);
+		sql.append("memberId = ?", memberId);
 
 		return MysqlUtil.insert(sql);
 	}
 
-	// 댓글s 가져오기
-	public List<Reply> getReplies() {
+	public List<Article> getBoardArticlesForPrint(int boardId) {
 		SecSql sql = new SecSql();
 
-		sql.append("SELECT * FROM reply");
+		sql.append("SELECT article.*, ");
+		sql.append("member.name AS extra_memberName");
+		sql.append("FROM article");
+		sql.append("INNER JOIN member");
+		sql.append("ON article.memberId = member.id");
+		sql.append("WHERE article.boardId = ?", boardId);
 
-		List<Reply> replies = new ArrayList<>();
-		List<Map<String, Object>> replyMapList = MysqlUtil.selectRows(sql);
+		List<Article> articles = new ArrayList<>();
+		List<Map<String, Object>> articlesMapList = MysqlUtil.selectRows(sql);
 
-		for (Map<String, Object> replyMap : replyMapList) {
-			Reply reply = new Reply(replyMap);
+		for (Map<String, Object> articlesMap : articlesMapList) {
+			Article article = new Article(articlesMap);
 
-			replies.add(reply);
+			articles.add(article);
 		}
 
-		return replies;
+		return articles;
 	}
 
-	// 댓글 가져오기
+	public Article getArticleById(int inputedId) {
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT article.*, ");
+		sql.append("member.name AS extra_memberName");
+		sql.append("FROM article");
+		sql.append("INNER JOIN member");
+		sql.append("ON article.memberId = member.id");
+		sql.append("WHERE article.id = ?", inputedId);
+
+		Map<String, Object> articleMap = MysqlUtil.selectRow(sql);
+
+		if (articleMap.isEmpty()) {
+			return null;
+		}
+
+		return new Article(articleMap);
+	}
+
+	public void articleModify(int id, String title, String body) {
+		SecSql sql = new SecSql();
+
+		sql.append("UPDATE article");
+		sql.append("SET updateDate = NOW(),");
+		sql.append("title = ?,", title);
+		sql.append("body = ?", body);
+		sql.append("WHERE id = ?", id);
+
+		MysqlUtil.update(sql);
+
+	}
+
+	public void articleDelete(int id) {
+		SecSql sql = new SecSql();
+
+		sql.append("DELETE FROM article");
+		sql.append("WHERE id = ?", id);
+
+		MysqlUtil.update(sql);
+
+	}
+
+	public int replyAdd(int articleId, String replyBody, int replyMemberId) {
+		SecSql sql = new SecSql();
+
+		sql.append("INSERT INTO reply");
+		sql.append("SET regDate = NOW(),");
+		sql.append("replyBody = ?,", replyBody);
+		sql.append("replyArticleId = ?,", articleId);
+		sql.append("replyMemberId = ?", replyMemberId);
+
+		return MysqlUtil.insert(sql);
+	}
+
 	public Reply getReply(int inputedId) {
 		SecSql sql = new SecSql();
 
-		sql.append("SELECT * FROM reply WHERE replyId = ?", inputedId);
+		sql.append("SELECT * FROM reply");
+		sql.append("WHERE id = ?", inputedId);
 
 		Map<String, Object> replyMap = MysqlUtil.selectRow(sql);
 
@@ -142,63 +148,60 @@ public class ArticleDao {
 		return new Reply(replyMap);
 	}
 
-	// 댓글 수정
-	public void replyModify(int inputedId, String replyBody) {
+	public void replyModify(int id, String replyBody) {
 		SecSql sql = new SecSql();
 
-		sql.append("UPDATE reply ");
-		sql.append("SET replyBody = ? ", replyBody);
-		sql.append("WHERE replyId = ? ", inputedId);
+		sql.append("UPDATE reply");
+		sql.append("SET");
+		sql.append("replyBody = ?", replyBody);
+		sql.append("WHERE id = ?", id);
 
 		MysqlUtil.update(sql);
 
 	}
 
-	// 댓글 삭제
-	public void replyDelete(int inputedId) {
+	public void replyDelete(int id) {
 		SecSql sql = new SecSql();
 
-		sql.append("DELETE FROM reply ");
-		sql.append("WHERE replyId = ? ", inputedId);
+		sql.append("DELETE FROM reply");
+		sql.append("WHERE id = ?", id);
 
 		MysqlUtil.delete(sql);
-
 	}
 
-	// 출력용 게시물 리스트 가져오기(쿼리 한개만 수행)
-	public List<Article> getArticlesForPrint() { // 오직 리스트 출력용으로만 사용될 함수
+	public List<Reply> getRepliesForPrint(int articleId) {
 		SecSql sql = new SecSql();
 
-		sql.append("SELECT article.*, member.name AS extra_memberName"); // inner join을 통해 쿼리를 한번만 실행해도
-		sql.append("FROM article"); // 멤버의 이름까지 가져올 수 있도록 함
-		sql.append("INNER JOIN member"); // 단, 이 퀴리 실행시 article 클래스 안에 member.name이라는 변수가 존재하지 않으므로
-		sql.append("ON article.memberId = member.memberId"); // member.name를 extra_memberName로 명명후 article 클래스에
-																// extra_memberName 변수 선언
+		sql.append("SELECT reply.*, ");
+		sql.append("member.name AS extra_memberName");
+		sql.append("FROM reply");
+		sql.append("INNER JOIN member");
+		sql.append("ON reply.replyMemberId = member.id");
+		sql.append("WHERE reply.replyArticleId = ?", articleId);
 
-		List<Article> articles = new ArrayList<Article>();
-		List<Map<String, Object>> articleListMap = MysqlUtil.selectRows(sql);
+		List<Reply> replise = new ArrayList<>();
+		List<Map<String, Object>> repliseMapList = MysqlUtil.selectRows(sql);
 
-		for (Map<String, Object> articleMap : articleListMap) {
-			Article article = new Article(articleMap);
+		for (Map<String, Object> repliseMap : repliseMapList) {
+			Reply reply = new Reply(repliseMap);
 
-			articles.add(article);
+			replise.add(reply);
 		}
-		return articles;
+
+		return replise;
 	}
 
-	// 추천 추가
-	public int addRecommand(int id, int recommandMemberId) {
+	public int recommandAdd(int articleId, int recommandMemberId) {
 		SecSql sql = new SecSql();
 
 		sql.append("INSERT INTO recommand");
-		sql.append("SET");
-		sql.append("recommandArticleId = ?, ", id);
-		sql.append("recommandMemberId = ? ", recommandMemberId);
+		sql.append("SET regDate = NOW(),");
+		sql.append("recommandArticleId = ?,", articleId);
+		sql.append("recommandMemberId = ?", recommandMemberId);
 
 		return MysqlUtil.insert(sql);
 	}
 
-	// 추천 중복 확인
 	public Recommand getRecommand(int articleId, int recommandMemberId) {
 		SecSql sql = new SecSql();
 
@@ -207,17 +210,16 @@ public class ArticleDao {
 		sql.append("AND");
 		sql.append("recommandMemberId = ?", recommandMemberId);
 
-		Map<String, Object> recommandMap = MysqlUtil.selectRow(sql);
+		Map<String, Object> recomandMap = MysqlUtil.selectRow(sql);
 
-		if (recommandMap.isEmpty()) {
+		if (recomandMap.isEmpty()) {
 			return null;
 		}
 
-		return new Recommand(recommandMap);
+		return new Recommand(recomandMap);
 	}
-	
-	//추천 취소
-	public void cancelRecommand(int articleId, int recommandMemberId) {
+
+	public void recomandDelete(int articleId, int recommandMemberId) {
 		SecSql sql = new SecSql();
 
 		sql.append("DELETE FROM recommand");
@@ -226,73 +228,90 @@ public class ArticleDao {
 		sql.append("recommandMemberId = ?", recommandMemberId);
 
 		MysqlUtil.delete(sql);
-
-	}
-
-	//추천 가져오기
-	public Recommand getRecommandByArticleId(int articleId, int recommandMemberId) {
 		
-		SecSql sql = new SecSql();
-
-		sql.append("SELECT * FROM recommand");
-		sql.append("WHERE recommandArticleId = ?", articleId);
-		sql.append("AND");
-		sql.append("recommandMemberId = ?", recommandMemberId);
-
-		Map<String, Object> recommandMap = MysqlUtil.selectRow(sql);
-
-		if (recommandMap.isEmpty()) {
-			return null;
-		}
-
-		return new Recommand(recommandMap);
 	}
-	
-	//추천s 가져오기
-	public List<Recommand> getRecommands() {
+
+	public List<Recommand> getRecommands(int articleId) {
 		SecSql sql = new SecSql();
 
 		sql.append("SELECT *");
 		sql.append("FROM recommand");
+		sql.append("WHERE recommandArticleId = ?", articleId);
 
 		List<Recommand> recommands = new ArrayList<>();
-		List<Map<String, Object>> recommandsListMap = MysqlUtil.selectRows(sql); 
+		List<Map<String, Object>> recommandsMapList = MysqlUtil.selectRows(sql);
 
-		for (Map<String, Object> recommandMap : recommandsListMap) {
-			Recommand recommnad = new Recommand(recommandMap);
+		for (Map<String, Object> recommandsMap : recommandsMapList) {
+			Recommand recommand = new Recommand(recommandsMap);
 
-			recommands.add(recommnad);
+			recommands.add(recommand);
 		}
+
 		return recommands;
 	}
 
-	//조회수 추가
-	public void addView(int inputedId) {
+	public void addView(int articleId) {
+		
 		SecSql sql = new SecSql();
 
 		sql.append("INSERT INTO view");
 		sql.append("SET");
-		sql.append("viewArticleId = ?", inputedId);
+		sql.append("viewArticleId = ?", articleId);
 
 		MysqlUtil.insert(sql);
+		
 	}
-	
-	//조회수s 가져오기
-	public List<View> getViews() {
+
+	public List<View> getViews(int articleId) {
 		SecSql sql = new SecSql();
 
 		sql.append("SELECT *");
 		sql.append("FROM view");
+		sql.append("WHERE viewArticleId = ?", articleId);
 
 		List<View> views = new ArrayList<>();
-		List<Map<String, Object>> viewsListMap = MysqlUtil.selectRows(sql); 
+		List<Map<String, Object>> viewsMapList = MysqlUtil.selectRows(sql);
 
-		for (Map<String, Object> viewMap : viewsListMap) {
-			View view = new View(viewMap);
+		for (Map<String, Object> viewsMap : viewsMapList) {
+			View view = new View(viewsMap);
 
 			views.add(view);
 		}
+
 		return views;
 	}
 
+	public List<Board> getBoards() {
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT *");
+		sql.append("FROM board");
+
+		List<Board> boards = new ArrayList<>();
+		List<Map<String, Object>> boardsMapList = MysqlUtil.selectRows(sql);
+
+		for (Map<String, Object> boardsMap : boardsMapList) {
+			Board board = new Board(boardsMap);
+
+			boards.add(board);
+	}
+
+		return boards;
+
+}
+
+	public Board getBoardByCode(String code) {
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT * FROM board");
+		sql.append("WHERE code = ?", code);
+
+		Map<String, Object> boardMap = MysqlUtil.selectRow(sql);
+
+		if (boardMap.isEmpty()) {
+			return null;
+		}
+
+		return new Board(boardMap);
+	}
 }

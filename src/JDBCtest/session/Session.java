@@ -2,17 +2,22 @@ package JDBCtest.session;
 
 public class Session {
 
-	public int loginedMemberId;
+	public int loginMemberId;
+	public int loginAdminMemberId;
 	public int selectedBoardId;
-	public int mangerMemberId;
 
 	public boolean loginStatus() {
 		// TODO Auto-generated method stub
-		return loginedMemberId != 0;
-	}
-	public boolean managerLoginStatus() {
-		return mangerMemberId != 0;
+		return loginMemberId > 0;
 	}
 
+	public boolean loginAdminMemberStatus() {
+		
+		return loginAdminMemberId > 0;
+	}
+	
+	public Session() {
+		selectedBoardId = 1;
+	}
 
 }

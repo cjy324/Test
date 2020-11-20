@@ -4,26 +4,25 @@ import java.util.Map;
 
 public class Member {
 
-	
-	public int memberId;
-	public String loginId;
-	public String loginPw;
-	public String name;
-	
 	public Member(Map<String, Object> memberMap) {
-		this.memberId = (int)memberMap.get("memberId");
+		this.id = (int)memberMap.get("id");
 		this.loginId = (String)memberMap.get("loginId");
 		this.loginPw = (String)memberMap.get("loginPw");
 		this.name = (String)memberMap.get("name");
+	
 	}
 
-	public boolean isAdmin() {			//관리자 아이디 지정
+	public int id;
+	public String loginId;
+	public String loginPw;
+	public String name;
+
+	public boolean isAdmin() {
 		return loginId.equals("asd");
 	}
-	
-	public String getType() {      //isAdmin()를 통한 회원 유형 확인
-		return isAdmin() ? "관리자" : "일반회원";
+
+	public String memberType() {
+		return isAdmin() ? "관리자" : "일반 회원";
 	}
-	
 	
 }
