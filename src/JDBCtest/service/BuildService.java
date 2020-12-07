@@ -67,7 +67,6 @@ public class BuildService {
 		for (Article article : articles) {
 			Board board = articleSerivice.getBoardById(article.boardId);
 
-	//		String fileName = "article_" + article.id + ".html";
 			String html = "<meta charset=\"UTF-8\">";
 			html += "<div>번호 : " + article.id + "</div>";
 			html += "<div>날짜 : " + article.regDate + "</div>";
