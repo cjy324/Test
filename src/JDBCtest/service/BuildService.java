@@ -18,12 +18,11 @@ public class BuildService {
 		memberService = Container.memberService;
 	}
 
-	public void makeHtml() {
-
+	public void buildSite() {
 		// site라는 폴더가 없을 경우 폴더 생성
 		File site = new File("site");
 		File articleFolder = new File("site/article");
-		
+
 		if (site.exists() == false) {
 			site.mkdir();
 		}
@@ -31,6 +30,34 @@ public class BuildService {
 			articleFolder.mkdir();
 		}
 
+		String head = Util.getFileContents("site_template/part/head.html");
+		String foot = Util.getFileContents("site_template/part/foot.html");
+
+		// 각 게시판 별 게시물리스트 페이지 생성
+		List<Board> boards = articleSerivice.getBoards();
+
+		for (Board board : boards) {
+			String fileName = board.code + "-list-1.html";
+
+			String html = "";
+			int boardId = Container.session.selectedBoardId;
+
+			List<Article> articles = articleSerivice.getBoardArticlesForPrint(boardId);
+
+			for (Article article : articles) {
+				html += "<tr>";
+				html += "<td>" + article.id + "</td>";
+				html += "<td>" + article.regDate + "</td>";
+				html += "<td><a href=\"" + article.id + ".html\">" + article.title + "</a></td>";
+				html += "</tr>";
+			}
+
+			html = head + html + foot;
+
+			Util.writeFileContents("site/article/" + fileName, html);
+		}
+
+		// 게시물 별 파일 생성
 		List<Article> articles = articleSerivice.getArticlesForPrint();
 
 		for (Article article : articles) {
@@ -52,7 +79,9 @@ public class BuildService {
 				html += "<div><a href=\"article_" + (article.id + 1) + ".html\">다음글</a></div>";
 			}
 
-			Util.writeFileContents("site/article/" + fileName, html);
+			html = head + html + foot;
+
+			Util.writeFileContents("site/article/" + article.id + ".html", html);
 		}
 	}
 

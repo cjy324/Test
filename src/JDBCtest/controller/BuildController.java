@@ -23,7 +23,7 @@ public class BuildController extends Controller {
 
 	private void buildSite(String cmd) {
 		System.out.println("== html 생성을 시작합니다. ==");
-		buildService.makeHtml();
+		buildService.buildSite();
 		System.out.println("(html 생성 완료)");
 	}
 }
