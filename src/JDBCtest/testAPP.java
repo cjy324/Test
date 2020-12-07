@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import JDBCtest.container.Container;
 import JDBCtest.controller.ArticleController;
+import JDBCtest.controller.BuildController;
 import JDBCtest.controller.Controller;
 import JDBCtest.controller.MemberController;
 import JDBCtest.mysqlutil.MysqlUtil;
@@ -13,18 +14,19 @@ public class testAPP {
 	Scanner sc;
 	MemberController memberController;
 	ArticleController articleController;
+	BuildController buildController;
 
 	public testAPP() {
 		sc = Container.scanner;
 		memberController = Container.memberController;
 		articleController = Container.articleController;
-
+		buildController = Container.buildController;
+		
 	}
 
 	public void run() {
 
 		while (true) {
-			System.out.printf("테스트용");
 			System.out.printf("명령어) ");
 			String cmd = sc.nextLine();
 
@@ -38,7 +40,7 @@ public class testAPP {
 			}
 
 			Controller controller = getControllerByCmd(cmd);
-
+			
 			if (controller != null) {
 				controller.doCmd(cmd);
 			}
@@ -57,6 +59,9 @@ public class testAPP {
 			return memberController;
 		} else if (cmd.startsWith("article ")) {
 			return articleController;
+		}
+		else if (cmd.startsWith("build ")) {
+			return buildController;
 		}
 		return null;
 	}

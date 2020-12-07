@@ -106,4 +106,8 @@ public class ArticleSerivice {
 		return articleDao.getBoardByCode(code);
 	}
 
+	public List<Article> getArticlesForPrint() {
+		return articleDao.articles();
+	}
+
 }

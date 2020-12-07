@@ -314,4 +314,25 @@ public class ArticleDao {
 
 		return new Board(boardMap);
 	}
+
+	public List<Article> articles() {
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT article.*, ");
+		sql.append("member.name AS extra_memberName");
+		sql.append("FROM article");
+		sql.append("INNER JOIN member");
+		sql.append("ON article.memberId = member.id");
+
+		List<Article> articles = new ArrayList<>();
+		List<Map<String, Object>> articlesMapList = MysqlUtil.selectRows(sql);
+
+		for (Map<String, Object> articlesMap : articlesMapList) {
+			Article article = new Article(articlesMap);
+
+			articles.add(article);
+		}
+
+		return articles;
+	}
 }
