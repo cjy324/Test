@@ -42,6 +42,8 @@ public class BuildService {
 			String html = "";
 			int boardId = Container.session.selectedBoardId;
 
+			String template = Util.getFileContents("site_template/article/list.html");
+			
 			List<Article> articles = articleSerivice.getBoardArticlesForPrint(boardId);
 
 			for (Article article : articles) {
@@ -52,6 +54,8 @@ public class BuildService {
 				html += "</tr>";
 			}
 
+			html = template.replace("${TR}", html);
+			
 			html = head + html + foot;
 
 			Util.writeFileContents("site/article/" + fileName, html);
@@ -63,7 +67,7 @@ public class BuildService {
 		for (Article article : articles) {
 			Board board = articleSerivice.getBoardById(article.boardId);
 
-			String fileName = "article_" + article.id + ".html";
+	//		String fileName = "article_" + article.id + ".html";
 			String html = "<meta charset=\"UTF-8\">";
 			html += "<div>번호 : " + article.id + "</div>";
 			html += "<div>날짜 : " + article.regDate + "</div>";
