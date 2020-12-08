@@ -1,5 +1,6 @@
 package JDBCtest.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import JDBCtest.container.Container;
@@ -108,6 +109,12 @@ public class ArticleSerivice {
 
 	public List<Article> getArticlesForPrint() {
 		return articleDao.articles();
+	}
+
+
+	public List<Article> getBoardArticlesByCodeForPrint(String code) {
+		Board board = articleDao.getBoardByCode(code);
+		return articleDao.getBoardArticlesForPrint(board.id);
 	}
 
 }

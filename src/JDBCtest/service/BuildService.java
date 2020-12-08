@@ -1,6 +1,7 @@
 package JDBCtest.service;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import JDBCtest.container.Container;
@@ -36,29 +37,50 @@ public class BuildService {
 		// 각 게시판 별 게시물리스트 페이지 생성
 		List<Board> boards = articleSerivice.getBoards();
 
-		for (Board board : boards) {
-			String fileName = board.code + "-list-1.html";
+		String fileName = "";
+		
 
+		for (Board board : boards) {
+			int listNo = 1;
 			String html = "";
-			int boardId = Container.session.selectedBoardId;
 
 			String template = Util.getFileContents("site_template/article/list.html");
-			
-			List<Article> articles = articleSerivice.getBoardArticlesForPrint(boardId);
 
-			for (Article article : articles) {
+			List<Article> articles = articleSerivice.getBoardArticlesByCodeForPrint(board.code);
+			List<Article> newArticles = new ArrayList<Article>();
+			for(Article article : articles) {
+				newArticles.add(article);
+			}
+			
+			//newArticles 5개씩 페이징
+			int articlesInAPage = 5;
+			int startPoint = newArticles.size() - 1;
+			startPoint -= (listNo - 1) * articlesInAPage;
+			int endPoint = startPoint - (articlesInAPage - 1);
+
+			if (startPoint < 0) {
+				return;
+			}
+			if (endPoint < 0) {
+				endPoint = 0;
+			}
+			for (int i = startPoint; i >= endPoint; i--) {
 				html += "<tr>";
-				html += "<td>" + article.id + "</td>";
-				html += "<td>" + article.regDate + "</td>";
-				html += "<td><a href=\"" + article.id + ".html\">" + article.title + "</a></td>";
+				html += "<td>" + newArticles.get(i).id + "</td>";
+				html += "<td>" + newArticles.get(i).regDate + "</td>";
+				html += "<td><a href=\"" + newArticles.get(i).id + ".html\">" + newArticles.get(i).title + "</a></td>";
+				html += "<td><a href=\"" + newArticles.get(i).id + ".html\">" + newArticles.get(i).extra_memberName + "</a></td>";
 				html += "</tr>";
 			}
 
+			fileName = board.code + "-list-" + listNo + ".html";
+
 			html = template.replace("${TR}", html);
-			
+
 			html = head + html + foot;
 
 			Util.writeFileContents("site/article/" + fileName, html);
+
 		}
 
 		// 게시물 별 파일 생성
@@ -67,7 +89,7 @@ public class BuildService {
 		for (Article article : articles) {
 			Board board = articleSerivice.getBoardById(article.boardId);
 
-	//		String fileName = "article_" + article.id + ".html";
+			// String fileName = "article_" + article.id + ".html";
 			String html = "<meta charset=\"UTF-8\">";
 			html += "<div>번호 : " + article.id + "</div>";
 			html += "<div>날짜 : " + article.regDate + "</div>";
@@ -77,10 +99,10 @@ public class BuildService {
 			html += "<div>게시판 : " + board.name + " 게시판" + "</div>";
 
 			if (article.id > 1) {
-				html += "<div><a href=\"article_" + (article.id - 1) + ".html\">이전글</a></div>";
+				html += "<div><a href=\"" + (article.id - 1) + ".html\">이전글</a></div>";
 			}
 			if (article.id != (articles.size())) {
-				html += "<div><a href=\"article_" + (article.id + 1) + ".html\">다음글</a></div>";
+				html += "<div><a href=\"" + (article.id + 1) + ".html\">다음글</a></div>";
 			}
 
 			html = head + html + foot;

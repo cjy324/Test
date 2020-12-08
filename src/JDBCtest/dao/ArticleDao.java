@@ -1,6 +1,7 @@
 package JDBCtest.dao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -72,10 +73,11 @@ public class ArticleDao {
 
 		for (Map<String, Object> articlesMap : articlesMapList) {
 			Article article = new Article(articlesMap);
-
+			
 			articles.add(article);
+			
 		}
-
+	//	Collections.reverse(articles);
 		return articles;
 	}
 
