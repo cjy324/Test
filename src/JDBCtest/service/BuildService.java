@@ -39,7 +39,7 @@ public class BuildService {
 
 		String fileName = "";
 		
-
+	
 		for (Board board : boards) {
 			int listNo = 1;
 			String html = "";
@@ -51,9 +51,9 @@ public class BuildService {
 			for(Article article : articles) {
 				newArticles.add(article);
 			}
-			
-			//newArticles 5개씩 페이징
-			int articlesInAPage = 5;
+	
+			//newArticles 2개씩 페이징
+			int articlesInAPage = 2;
 			int startPoint = newArticles.size() - 1;
 			startPoint -= (listNo - 1) * articlesInAPage;
 			int endPoint = startPoint - (articlesInAPage - 1);
@@ -80,8 +80,9 @@ public class BuildService {
 			html = head + html + foot;
 
 			Util.writeFileContents("site/article/" + fileName, html);
-
+			
 		}
+		
 
 		// 게시물 별 파일 생성
 		List<Article> articles = articleSerivice.getArticlesForPrint();
