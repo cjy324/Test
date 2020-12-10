@@ -29,6 +29,9 @@ public class BuildService {
 		if (articleFolder.exists() == false) {
 			articleFolder.mkdir();
 		}
+		
+		// app.css 가져오기 추가(20.12.10)
+		Util.copy("site_template/app.css", "site/article/app.css");
 
 		String head = Util.getFileContents("site_template/part/head.html");
 		String foot = Util.getFileContents("site_template/part/foot.html");
@@ -126,13 +129,13 @@ public class BuildService {
 		}
 		
 
-		// 게시물 별 파일 생성
+		// 게시물 별 파일 생성(게시판 별 이전글,다음글 추가)
 		
 		for(Board board : boards) {
 			List<Article> articles = articleSerivice.getBoardArticlesByCodeForPrint(board.code);
 			int articlesSize = articles.size();
-			int x = 0;
-			int beforeArticleId = articles.get(x).id; 
+			int beforeArticleIndex = 0;
+			int beforeArticleId = articles.get(beforeArticleIndex).id; 
 		for (Article article : articles) {
 //			Board board = articleSerivice.getBoardById(article.boardId);
 			
@@ -148,17 +151,18 @@ public class BuildService {
 			
 			
 			if (article.id > beforeArticleId) {
-				html += "<div><a href=\"" + articles.get(beforeArticleId-1).id + ".html\">이전글</a></div>";
+				html += "<div><a href=\"" + articles.get(beforeArticleIndex-1).id + ".html\">이전글</a></div>";
 			}
-			if (article.id < articlesSize) {
-				html += "<div><a href=\"" + articles.get(beforeArticleId+1).id + ".html\">다음글</a></div>";
+			if (beforeArticleIndex < articlesSize-1) {
+				html += "<div><a href=\"" + articles.get(beforeArticleIndex+1).id + ".html\">다음글</a></div>";
 			}
 
 			html = head + html + foot;
 
 			Util.writeFileContents("site/article/" + article.id + ".html", html);
-			x++;
-			beforeArticleId = articles.get(x).id;
+			beforeArticleIndex++;
+			beforeArticleId = articles.get(beforeArticleIndex-1).id;
+
 		}
 		}
 	}
