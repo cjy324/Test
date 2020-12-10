@@ -39,15 +39,18 @@ public class BuildService {
 		
 		// 각 게시판 별 게시물리스트 페이지 생성
 		List<Board> boards = articleSerivice.getBoards();
-
 		String fileName = "";
+		String template = "";
+		StringBuilder boardMenuContentHtml = new StringBuilder();
+		
 		for (Board board : boards) {
 
 			int listNo = 1;
 			String html = "";
 			
+			
 
-			String template = Util.getFileContents("site_template/article/list.html");
+			template = Util.getFileContents("site_template/article/list.html");
 
 			List<Article> articles = articleSerivice.getBoardArticlesByCodeForPrint(board.code);
 
@@ -77,6 +80,7 @@ public class BuildService {
 			fileName = board.code + "-list-" + listNo + ".html";
 			
 			html = template.replace("${TR}", html);
+			
 			if (listNo > 1) {
 				html += "<div><a href=\"" + board.code + "-list-" + (listNo-1) + ".html\">이전페이지</a></div>";
 			}
@@ -84,10 +88,32 @@ public class BuildService {
 				html += "<div><a href=\"" + board.code + "-list-" + (listNo+1) + ".html\">다음페이지</a></div>";
 			}
 			
+			boardMenuContentHtml.append("<li>");
+
+			boardMenuContentHtml.append("<a href=\"" + fileName + "\" class=\"block flex jc-c\">");
+
+			String iClass = "fas fa-clipboard-list";
+
+			if (board.code.contains("notice")) {
+				iClass = "fab fa-free-code-camp";
+			} else if (board.code.contains("free")) {
+				iClass = "fab fa-free-code-camp";
+			}
+
+			boardMenuContentHtml.append("<i class=\"" + iClass + "\"></i>");
+			boardMenuContentHtml.append(" ");
+			boardMenuContentHtml.append("<span>");
+			boardMenuContentHtml.append(board.name);
+			boardMenuContentHtml.append("</span>");
+			boardMenuContentHtml.append("</a>");
+			boardMenuContentHtml.append("</li>");
+						
+			head = head.replace("[임시 게시판 이름]", boardMenuContentHtml.toString());
+			
 			html = head + html + foot;
 
 			Util.writeFileContents("site/article/" + fileName, html);
-			
+
 			listNo++;
 			
 			//다음 5개씩 페이징
