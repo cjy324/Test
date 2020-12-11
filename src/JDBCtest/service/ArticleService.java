@@ -11,11 +11,11 @@ import JDBCtest.dto.Recommand;
 import JDBCtest.dto.Reply;
 import JDBCtest.dto.View;
 
-public class ArticleSerivice {
+public class ArticleService {
 
 	ArticleDao articleDao;
 
-	public ArticleSerivice() {
+	public ArticleService() {
 
 		articleDao = Container.articleDao;
 

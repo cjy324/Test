@@ -9,12 +9,12 @@ import JDBCtest.util.Util;
 
 public class BuildService {
 
-	ArticleSerivice articleSerivice;
-	MemberService memberService;
+	private ArticleService articleService;
+//	private MemberService memberService;
 
 	public BuildService() {
-		articleSerivice = Container.articleSerivice;
-		memberService = Container.memberService;
+		articleService = Container.articleService;
+//		memberService = Container.memberService;
 	}
 
 	public void buildSite() {
@@ -26,8 +26,43 @@ public class BuildService {
 
 		buildIndexPage();
 		buildArticleDetailPages();
+		buildArticleBoardPages();
 	}
 
+	private void buildArticleBoardPages() {
+		List<Board> boards = articleService.getBoards();
+
+		String head = Util.getFileContents("site_template/head.html");
+		String foot = Util.getFileContents("site_template/foot.html");
+		String list = Util.getFileContents("site_template/article/list.html");
+		String html = "";
+		StringBuilder htmlSb = new StringBuilder();
+		
+		for (Board board : boards) {
+
+			List<Article> articles = articleService.getBoardArticlesByCodeForPrint(board.code);
+
+			for (Article article : articles) {
+				htmlSb.append("<tr>");
+				htmlSb.append("<td>"+ article.id + "</th>");
+				htmlSb.append("</th>");
+				htmlSb.append("<td>"+ article.title + "</th>");
+				htmlSb.append("</th>");
+				htmlSb.append("<td>"+ article.extra_memberName + "</th>");
+				htmlSb.append("</th>");
+				htmlSb.append("<td>"+ article.regDate + "</th>");
+				htmlSb.append("</th>");
+				htmlSb.append("</tr>");
+			}
+			html = head + list + htmlSb + foot;
+			
+			
+			Util.writeFile(filePath, sb.toString());
+		}
+
+	}
+
+//index 페이지 생성
 	private void buildIndexPage() {
 		StringBuilder sb = new StringBuilder();
 
@@ -45,13 +80,13 @@ public class BuildService {
 		System.out.println(filePath + " 생성");
 	}
 
+	// 게시물 별 상세페이지 생성
 	private void buildArticleDetailPages() {
-		List<Article> articles = articleSerivice.getArticlesForPrint();
+		List<Article> articles = articleService.getArticlesForPrint();
 
 		String head = getHeadHtml("article_detail");
 		String foot = Util.getFileContents("site_template/foot.html");
 
-		// 게시물 상세피이지 생성
 		for (Article article : articles) {
 			StringBuilder sb = new StringBuilder();
 
@@ -82,7 +117,7 @@ public class BuildService {
 		String head = Util.getFileContents("site_template/head.html");
 
 		StringBuilder boardMenuContentHtml = new StringBuilder();
-		List<Board> forPrintBoards = articleSerivice.getBoards();
+		List<Board> forPrintBoards = articleService.getBoards();
 
 		for (Board board : forPrintBoards) {
 			boardMenuContentHtml.append("<li>");
@@ -91,21 +126,7 @@ public class BuildService {
 
 			boardMenuContentHtml.append("<a href=\"" + link + "\" class=\"block\">");
 
-			String iClass = "fas fa-clipboard-list";
-
-			if (board.code.contains("notice")) {
-				iClass = "fab fa-free-code-camp";
-			} else if (board.code.contains("free")) {
-				iClass = "fab fa-free-code-camp";
-			}
-
-			boardMenuContentHtml.append("<i class=\"" + iClass + "\"></i>");
-
-			boardMenuContentHtml.append(" ");
-
-			boardMenuContentHtml.append("<span>");
-			boardMenuContentHtml.append(board.name);
-			boardMenuContentHtml.append("</span>");
+			boardMenuContentHtml.append(getTitleBarContentByPageName("article_list_" + board.code));
 
 			boardMenuContentHtml.append("</a>");
 
@@ -113,19 +134,27 @@ public class BuildService {
 		}
 
 		head = head.replace("${menu-bar__menu-1__board-menu-content}", boardMenuContentHtml.toString());
-		
-		String titleBarContentHtml = getTitleBarContentByFileName(pageName);
-		
+
+		String titleBarContentHtml = getTitleBarContentByPageName(pageName);
+
 		head = head.replace("${title-bar__content}", titleBarContentHtml);
 
 		return head;
 	}
 
-	private String getTitleBarContentByFileName(String pageName) {
-		if ( pageName.equals("index") ) {
+	private String getTitleBarContentByPageName(String pageName) {
+		if (pageName.equals("index")) {
 			return "<i class=\"fas fa-home\"></i> <span>HOME</span>";
+		} else if (pageName.equals("article_detail")) {
+			return "<i class=\"fas fa-file-alt\"></i> <span>ARTICLE DETAIL</span>";
+		} else if (pageName.startsWith("article_list_free")) {
+			return "<i class=\"fab fa-free-code-camp\"></i> <span>FREE LIST</span>";
+		} else if (pageName.startsWith("article_list_notice")) {
+			return "<i class=\"fas fa-flag\"></i> <span>NOTICE LIST</span>";
+		} else if (pageName.startsWith("article_list_")) {
+			return "<i class=\"fas fa-clipboard-list\"></i> <span>NOTICE LIST</span>";
 		}
-		
+
 		return "";
 	}
 }
