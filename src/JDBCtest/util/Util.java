@@ -1,46 +1,49 @@
 package JDBCtest.util;
 
-import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class Util {
-	public static String getNowDateStr() {
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date time = new Date();
-		return format.format(time);
+	public static void mkdirs(String path) {
+		File dir = new File(path);
+
+		if (dir.exists() == false) {
+			dir.mkdirs();
+		}
 	}
 
-	// 파일에 내용쓰기
-	public static void writeFileContents(String filePath, int data) {
-		writeFileContents(filePath, data + "");
+	public static void writeFile(String path, String body) {
+		File file = new File(path);
+
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			writer.write(body);
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	// 첫 문자 소문자화
-	public static String lcfirst(String str) {
-		String newStr = "";
-		newStr += str.charAt(0);
-		newStr = newStr.toLowerCase();
-
-		return newStr + str.substring(1);
+	public static boolean rmdir(String path) {
+		return rmdir(new File(path));
 	}
 
-	// 파일이 존재하는지
-	public static boolean isFileExists(String filePath) {
-		File f = new File(filePath);
-		if (f.isFile()) {
-			return true;
+	public static boolean rmdir(File dirToBeDeleted) {
+		File[] allContents = dirToBeDeleted.listFiles();
+		if (allContents != null) {
+			for (File file : allContents) {
+				rmdir(file);
+			}
 		}
 
-		return false;
+		return dirToBeDeleted.delete();
 	}
 
 	// 파일내용 읽어오기
@@ -64,23 +67,6 @@ public class Util {
 		}
 
 		return rs;
-	}
-
-	// 파일 쓰기
-	public static void writeFileContents(String filePath, String contents) {
-		BufferedOutputStream bs = null;
-		try {
-			bs = new BufferedOutputStream(new FileOutputStream(filePath));
-			bs.write(contents.getBytes()); // Byte형으로만 넣을 수 있음
-		} catch (Exception e) {
-			e.getStackTrace();
-		} finally {
-			try {
-				bs.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 	public static boolean copy(String sourcePath, String destPath) {
